@@ -24,17 +24,18 @@ import requests
 import tweepy
 import time
 import os
-import urllib.parse
+import urlparse
 from glob import glob
+from imgurpython import ImgurClient
+from imgurpython.helpers.error import ImgurClientError
+from tokens import *
+import sys
 
-# Place your Twitter API keys here
-ACCESS_TOKEN = ''
-ACCESS_TOKEN_SECRET = ''
-CONSUMER_KEY = ''
-CONSUMER_SECRET = ''
+reload(sys)
+sys.setdefaultencoding('utf8')
 
-# Place the subreddit you want to look up posts from here
-SUBREDDIT_TO_MONITOR = ''
+# seconds to wait in between posts
+WAIT_TIME = 60 * 30
 
 # Place the name of the folder where the images are downloaded
 IMAGE_DIR = 'img'
@@ -42,9 +43,14 @@ IMAGE_DIR = 'img'
 # Place the name of the file to store the IDs of posts that have been posted
 POSTED_CACHE = 'posted_posts.txt'
 
+# Imgur client
+IMGUR_CLIENT = ImgurClient(IMGUR_CLIENT_ID, IMGUR_CLIENT_SECRET)
+
+# last post tweeted
+last_post = None
 
 def setup_connection_reddit(subreddit):
-    ''' Creates a connection to the reddit API. '''
+    ''' Creates a c/#onnection to the reddit API. '''
     print('[bot] Setting up connection with reddit')
     reddit_api = praw.Reddit('reddit Twitter tool monitoring {}'.format(subreddit))
     subreddit = reddit_api.get_subreddit(subreddit)
@@ -52,9 +58,9 @@ def setup_connection_reddit(subreddit):
 
 
 def tweet_creator(subreddit_info):
+    global last_post
     ''' Looks up posts from reddit and shortens the URLs to them. '''
     post_dict = {}
-    post_ids = []
 
     print('[bot] Getting posts from reddit')
 
@@ -65,32 +71,41 @@ def tweet_creator(subreddit_info):
     #
     # "limit" tells the API the maximum number of posts to look up
 
-    for submission in subreddit_info.get_hot(limit=5):
-        if not already_tweeted(submission.id):
-            # This stores a link to the reddit post itself
-            # If you want to link to what the post is linking to instead, use
-            # "submission.url" instead of "submission.permanlink"
-            post_dict[submission.title] = {}
-            post = post_dict[submission.title]
-            post['link'] = submission.permalink
-            
-            # Store the url the post points to (if any)
-            # If it's an imgur URL, it will later be downloaded and uploaded alongside the tweet
-            post['img_path'] = get_image(submission.url)
-            
-            post_ids.append(submission.id)
+    while (len(post_dict) < 3):
+        print last_post
+        posts = []
+        if last_post is None:
+            posts = subreddit_info.get_hot(limit=3)
         else:
-            print('[bot] Already tweeted: {}'.format(str(submission)))
+            posts = subreddit_info.get_hot(limit=3, params={"after": last_post})
 
-    return post_dict, post_ids
+        for p in posts:
+            if not already_tweeted(p.id):
+                # This stores a link to the reddit post itself
+                # If you want to link to what the post is linking to instead, use
+                # "p.url" instead of "p.permanlink"
+                post_dict[p.id] = {}
+                post = post_dict[p.id]
+                post['title'] = p.title
+                post['link'] = p.permalink
+
+                # Store the url the post points to (if any)
+                # If it's an imgur URL, it will later be downloaded and uploaded alongside the tweet
+                post['img_path'] = get_image(p.url)
+            else:
+                print('[bot] Already tweeted: {}'.format(str(p)))
+
+            last_post = p.fullname
+
+    return post_dict
 
 
-def already_tweeted(post_id):
+def already_tweeted(pid):
     ''' Checks if the reddit Twitter bot has already tweeted a post. '''
     found = False
     with open(POSTED_CACHE, 'r') as in_file:
         for line in in_file:
-            if post_id in line:
+            if pid in line:
                 found = True
                 break
     return found
@@ -106,55 +121,76 @@ def strip_title(title, num_characters):
     else:
         return title[:num_characters] + '…'
 
-
-def get_image(img_url):
-    ''' Downloads i.imgur.com images that reddit posts may point to. '''
-    if 'imgur.com' in img_url:
-        file_name = os.path.basename(urllib.parse.urlsplit(img_url).path)
-        img_path = IMAGE_DIR + '/' + file_name
-        print('[bot] Downloading image at URL ' + img_url + ' to ' + img_path)
-        resp = requests.get(img_url, stream=True)
-        if resp.status_code == 200:
-            with open(img_path, 'wb') as image_file:
-                for chunk in resp:
-                    image_file.write(chunk)
-            # Return the path of the image, which is always the same since we just overwrite images
-            return img_path
-        else:
-            print('[bot] Image failed to download. Status code: ' + resp.status_code)
+def download_image(url, path):
+    print('[bot] Downloading image at URL ' + url + ' to ' + path)
+    resp = requests.get(url, stream=True)
+    if resp.status_code == 200:
+        with open(path, 'wb') as image_file:
+            for chunk in resp:
+                image_file.write(chunk)
+        return path
     else:
-        print('[bot] Post doesn\'t point to an i.imgur.com link')
-    return ''
+        print('[bot] Image failed to download %s. Status code: %s' % (url, str(resp.status_code)))
 
 
-def tweeter(post_dict, post_ids):
+
+def get_image(url):
+    ''' Downloads i.imgur.com images that reddit posts may point to. '''
+    if 'imgur' not in url:
+        print('[bot] %s doesn\'t point to an i.imgur.com link' % url)
+        return ''
+
+    img_url = ''
+    try:
+        if 'i.imgur.com' in url:
+            img_url = url
+        elif '/a/' in url:
+            # pick first picture in the case of an album
+            album_id = os.path.basename(urlparse.urlsplit(url).path)
+            img_id = IMGUR_CLIENT.get_album(album_id).cover
+            img_url = IMGUR_CLIENT.get_image(img_id).link
+        else:
+            img_id = os.path.basename(urlparse.urlsplit(url).path)
+            img_url = IMGUR_CLIENT.get_image(img_id).link
+    except ImgurClientError as e:
+        print('[bot] Image failed to download %s. Status code: %s' % (url, str(e.status_code)))
+        print(e.error_message)
+
+    save_path = IMAGE_DIR + '/' + os.path.basename(urlparse.urlsplit(img_url).path)
+    download_image(img_url, save_path)
+    return save_path
+
+
+def tweeter(post_dict):
     ''' Tweets all of the selected reddit posts. '''
-    auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-    auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+    auth = tweepy.OAuthHandler(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
+    auth.set_access_token(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET)
     api = tweepy.API(auth)
-    
-    for post, post_id in zip(post_dict, post_ids):
-        img_path = post_dict[post]['img_path']
-        
+
+    print post_dict
+    for pid in post_dict:
+        post = post_dict[pid]
+        img_path = post_dict[pid]['img_path']
+
         if img_path:
-            post_text = strip_title(post, 83) + ' ' + post_dict[post]['link'] + ' #dataviz'
+            post_text = strip_title(post['title'], 83) + ' ' + post['link'] + ' #dota2'
             print('[bot] Posting this link on Twitter')
             print(post_text)
             print('[bot] With image ' + img_path)
             api.update_with_media(filename=img_path, status=post_text)
         else:
-            post_text = strip_title(post, 106) + ' ' + post_dict[post]['link'] + ' #dataviz'
+            post_text = strip_title(post['title'], 106) + ' ' + post['link'] + ' #dota2'
             print('[bot] Posting this link on Twitter')
             print(post_text)
             api.update_status(status=post_text)
-        log_tweet(post_id)
-        time.sleep(30)
+        log_tweet(pid)
+        time.sleep(WAIT_TIME)
 
 
-def log_tweet(post_id):
+def log_tweet(pid):
     ''' Takes note of when the reddit Twitter bot tweeted a post. '''
     with open(POSTED_CACHE, 'a') as out_file:
-        out_file.write(str(post_id) + '\n')
+        out_file.write(str(pid) + '\n')
 
 
 def main():
@@ -166,10 +202,11 @@ def main():
     if not os.path.exists(IMAGE_DIR):
         os.makedirs(IMAGE_DIR)
 
-    subreddit = setup_connection_reddit(SUBREDDIT_TO_MONITOR)
-    post_dict, post_ids = tweet_creator(subreddit)
-    tweeter(post_dict, post_ids)
-    
+    subreddit = setup_connection_reddit(SUBREDDIT)
+    while(True):
+        post_dict = tweet_creator(subreddit)
+        tweeter(post_dict)
+
     # Clean out the image cache
     for filename in glob(IMAGE_DIR + '/*'):
     	os.remove(filename)

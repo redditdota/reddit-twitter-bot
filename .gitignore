@@ -1,0 +1,7 @@
+tokens.py*
+posted_posts.txt
+img/
+*.pyc
+*.swp
+*.swo
+.DS_Store
