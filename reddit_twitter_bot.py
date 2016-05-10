@@ -1,23 +1,3 @@
-# -*- coding: utf-8 -*-
-
-'''
-Copyright 2015 Randal S. Olson
-
-This file is part of the reddit Twitter Bot library.
-
-The reddit Twitter Bot library is free software: you can redistribute it and/or
-modify it under the terms of the GNU General Public License as published by the
-Free Software Foundation, either version 3 of the License, or (at your option)
-any later version.
-
-The reddit Twitter Bot library is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-License for more details. You should have received a copy of the GNU General
-Public License along with the reddit Twitter Bot library.
-If not, see http://www.gnu.org/licenses/.
-'''
-
 import praw
 import json
 import requests
@@ -46,9 +26,6 @@ POSTED_CACHE = 'posted_posts.txt'
 # Imgur client
 IMGUR_CLIENT = ImgurClient(IMGUR_CLIENT_ID, IMGUR_CLIENT_SECRET)
 
-# last post tweeted
-last_post = None
-
 def setup_connection_reddit(subreddit):
     ''' Creates a c/#onnection to the reddit API. '''
     print('[bot] Setting up connection with reddit')
@@ -58,7 +35,7 @@ def setup_connection_reddit(subreddit):
 
 
 def tweet_creator(subreddit_info):
-    global last_post
+    last_post = None 
     ''' Looks up posts from reddit and shortens the URLs to them. '''
     post_dict = {}
 
@@ -72,7 +49,6 @@ def tweet_creator(subreddit_info):
     # "limit" tells the API the maximum number of posts to look up
 
     while (len(post_dict) < 3):
-        print last_post
         posts = []
         if last_post is None:
             posts = subreddit_info.get_hot(limit=3)
