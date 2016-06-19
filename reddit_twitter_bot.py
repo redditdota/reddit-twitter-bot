@@ -10,21 +10,34 @@ from imgurpython import ImgurClient
 from imgurpython.helpers.error import ImgurClientError
 from tokens import *
 import sys
+from cachetools import LRUCache
+import atexit
+import pickle
 
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-# seconds to wait in between posts
-WAIT_TIME = 60 * 30
+# seconds between updates
+WAIT_TIME = 60 * 5
 
 # Place the name of the folder where the images are downloaded
 IMAGE_DIR = 'img'
 
 # Place the name of the file to store the IDs of posts that have been posted
-POSTED_CACHE = 'posted_posts.txt'
+POSTED_CACHE = LRUCache(maxsize = 128)
+CACHE_FILE = "cache.pkl"
+
+# Maximum threshold required for momentum posts
+THRESHOLD = 200
+LAST_TWEET = 0
 
 # Imgur client
 IMGUR_CLIENT = ImgurClient(IMGUR_CLIENT_ID, IMGUR_CLIENT_SECRET)
+
+# Twitter API
+TWITTER_AUTH_HANDLER = tweepy.OAuthHandler(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
+TWITTER_AUTH_HANDLER.set_access_token(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET)
+TWITTER_API = tweepy.API(TWITTER_AUTH_HANDLER)
 
 def setup_connection_reddit(subreddit):
     ''' Creates a c/#onnection to the reddit API. '''
@@ -33,58 +46,38 @@ def setup_connection_reddit(subreddit):
     subreddit = reddit_api.get_subreddit(subreddit)
     return subreddit
 
+def should_post(post):
+    now = time.time()
+    elapsed_time = now - LAST_TWEET
+    age = now - post.created_utc
+    print((post.score + post.num_comments) / age * elapsed_time)
+    if ((post.score + post.num_comments) / age * elapsed_time > THRESHOLD):
+        return True
+    else:
+        return False
 
 def tweet_creator(subreddit_info):
-    last_post = None 
-    ''' Looks up posts from reddit and shortens the URLs to them. '''
-    post_dict = {}
-
     print('[bot] Getting posts from reddit')
 
-    # You can use the following "get" functions to get posts from reddit:
-    #   - get_top(): gets the most-upvoted posts (ignoring post age)
-    #   - get_hot(): gets the most-upvoted posts (taking post age into account)
-    #   - get_new(): gets the newest posts
-    #
-    # "limit" tells the API the maximum number of posts to look up
+    post = {}
+    posts = subreddit_info.get_hot(limit=25)
+    for p in posts:
+        if not already_tweeted(p.id) and should_post(p):
+            post['id'] = p.id
+            post['title'] = p.title
+            post['link'] = p.permalink
+            post['img_path'] = get_image(p.url)
+            return post
 
-    while (len(post_dict) < 3):
-        posts = []
-        if last_post is None:
-            posts = subreddit_info.get_hot(limit=3)
-        else:
-            posts = subreddit_info.get_hot(limit=3, params={"after": last_post})
-
-        for p in posts:
-            if not already_tweeted(p.id):
-                # This stores a link to the reddit post itself
-                # If you want to link to what the post is linking to instead, use
-                # "p.url" instead of "p.permanlink"
-                post_dict[p.id] = {}
-                post = post_dict[p.id]
-                post['title'] = p.title
-                post['link'] = p.permalink
-
-                # Store the url the post points to (if any)
-                # If it's an imgur URL, it will later be downloaded and uploaded alongside the tweet
-                post['img_path'] = get_image(p.url)
-            else:
-                print('[bot] Already tweeted: {}'.format(str(p)))
-
-            last_post = p.fullname
-
-    return post_dict
+    return None
 
 
 def already_tweeted(pid):
     ''' Checks if the reddit Twitter bot has already tweeted a post. '''
-    found = False
-    with open(POSTED_CACHE, 'r') as in_file:
-        for line in in_file:
-            if pid in line:
-                found = True
-                break
-    return found
+    if pid in POSTED_CACHE:
+        return True
+    else:
+        return False
 
 
 def strip_title(title, num_characters):
@@ -95,7 +88,7 @@ def strip_title(title, num_characters):
     if len(title) <= num_characters:
         return title
     else:
-        return title[:num_characters] + '…'
+        return title[:num_characters] + '...'
 
 def download_image(url, path):
     print('[bot] Downloading image at URL ' + url + ' to ' + path)
@@ -137,55 +130,64 @@ def get_image(url):
     return save_path
 
 
-def tweeter(post_dict):
-    ''' Tweets all of the selected reddit posts. '''
-    auth = tweepy.OAuthHandler(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
-    auth.set_access_token(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET)
-    api = tweepy.API(auth)
+def tweet(post):
+    img_path = post['img_path']
 
-    print post_dict
-    for pid in post_dict:
-        post = post_dict[pid]
-        img_path = post_dict[pid]['img_path']
+    status = None
+    if img_path:
+        post_text = strip_title(post['title'], 83) + ' #dota2 ' + post['link']
+        print('[bot] Posting this link on Twitter')
+        print(post_text)
+        print('[bot] With image ' + img_path)
+        status = TWITTER_API.update_with_media(filename=img_path, status=post_text)
+    else:
+        post_text = strip_title(post['title'], 106) + ' #dota2 ' + post['link']
+        print('[bot] Posting this link on Twitter')
+        print(post_text)
+        status = TWITTER_API.update_status(status=post_text)
 
-        if img_path:
-            post_text = strip_title(post['title'], 83) + ' ' + post['link'] + ' #dota2'
-            print('[bot] Posting this link on Twitter')
-            print(post_text)
-            print('[bot] With image ' + img_path)
-            api.update_with_media(filename=img_path, status=post_text)
-        else:
-            post_text = strip_title(post['title'], 106) + ' ' + post['link'] + ' #dota2'
-            print('[bot] Posting this link on Twitter')
-            print(post_text)
-            api.update_status(status=post_text)
-        log_tweet(pid)
-        time.sleep(WAIT_TIME)
+    log_tweet(post, status)
 
 
-def log_tweet(pid):
+def log_tweet(post, status):
     ''' Takes note of when the reddit Twitter bot tweeted a post. '''
-    with open(POSTED_CACHE, 'a') as out_file:
-        out_file.write(str(pid) + '\n')
+    POSTED_CACHE[post['id']] = status.id
+    global LAST_TWEET
+    LAST_TWEET = time.time()
 
 
 def main():
     ''' Runs through the bot posting routine once. '''
     # If the tweet tracking file does not already exist, create it
-    if not os.path.exists(POSTED_CACHE):
-        with open(POSTED_CACHE, 'w'):
-            pass
     if not os.path.exists(IMAGE_DIR):
         os.makedirs(IMAGE_DIR)
 
+    global POSTED_CACHE
+    if os.path.exists(CACHE_FILE):
+        with open(CACHE_FILE, 'rb') as cache:
+            POSTED_CACHE = pickle.load(cache)
+    else:
+        POSTED_CACHE = LRUCache(maxsize = 128)
+
+    def on_exit():
+        # Clean out the image cache
+        for filename in glob(IMAGE_DIR + '/*'):
+    	    os.remove(filename)
+
+        # save LRU cache to file
+        with open(CACHE_FILE, 'wb') as cache:
+            pickle.dump(POSTED_CACHE, cache)
+
+    atexit.register(on_exit)
+
     subreddit = setup_connection_reddit(SUBREDDIT)
     while(True):
-        post_dict = tweet_creator(subreddit)
-        tweeter(post_dict)
-
-    # Clean out the image cache
-    for filename in glob(IMAGE_DIR + '/*'):
-    	os.remove(filename)
+        post = tweet_creator(subreddit)
+        if post == None:
+            time.sleep(WAIT_TIME)
+        else:
+            tweet(post)
+            time.sleep(WAIT_TIME * 3)
 
 if __name__ == '__main__':
     main()

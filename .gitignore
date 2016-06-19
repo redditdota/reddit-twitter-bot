@@ -5,3 +5,4 @@ img/
 *.swp
 *.swo
 .DS_Store
+cache.pkl
