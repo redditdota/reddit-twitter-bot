@@ -61,6 +61,12 @@ def tweet_creator(subreddit_info):
 
     post = {}
     posts = subreddit_info.get_hot(limit=25)
+    try:
+        posts = list(posts)
+    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout) as e:
+        print(e.message)
+        return None
+
     for p in posts:
         if not already_tweeted(p.id) and should_post(p):
             post['id'] = p.id
