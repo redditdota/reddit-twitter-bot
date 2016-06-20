@@ -63,7 +63,7 @@ def tweet_creator(subreddit_info):
     posts = subreddit_info.get_hot(limit=25)
     try:
         posts = list(posts)
-    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout) as e:
+    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, praw.errors.HTTPException) as e:
         print(e.message)
         return None
 
