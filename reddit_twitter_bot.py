@@ -197,7 +197,11 @@ def main():
         if post == None:
             time.sleep(WAIT_TIME)
         else:
-            tweet(post)
+            try:
+                tweet(post)
+            except tweepy.error.TweepError as e:
+                print("[bot] " + str(e))
+
             time.sleep(WAIT_TIME * 3)
             i += 1
 
