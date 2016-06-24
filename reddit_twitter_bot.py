@@ -175,25 +175,35 @@ def main():
     else:
         POSTED_CACHE = LRUCache(maxsize = 128)
 
+    def save_cache():
+        with open(CACHE_FILE, 'wb') as cache:
+            pickle.dump(POSTED_CACHE, cache)
+
     def on_exit():
         # Clean out the image cache
         for filename in glob(IMAGE_DIR + '/*'):
     	    os.remove(filename)
 
         # save LRU cache to file
-        with open(CACHE_FILE, 'wb') as cache:
-            pickle.dump(POSTED_CACHE, cache)
+        save_cache()
 
     atexit.register(on_exit)
 
     subreddit = setup_connection_reddit(SUBREDDIT)
+    i = 0
     while(True):
         post = tweet_creator(subreddit)
         if post == None:
             time.sleep(WAIT_TIME)
+            i += 1
         else:
             tweet(post)
             time.sleep(WAIT_TIME * 3)
+            i += 3
+
+        if (i == 100):
+            save_cache()
+            i = 0
 
 if __name__ == '__main__':
     main()
