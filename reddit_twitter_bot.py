@@ -19,6 +19,7 @@ sys.setdefaultencoding('utf8')
 
 # seconds between updates
 WAIT_TIME = 60 * 5
+SAVE_FREQUENCY = 6
 
 # Place the name of the folder where the images are downloaded
 IMAGE_DIR = 'img'
@@ -195,13 +196,12 @@ def main():
         post = tweet_creator(subreddit)
         if post == None:
             time.sleep(WAIT_TIME)
-            i += 1
         else:
             tweet(post)
             time.sleep(WAIT_TIME * 3)
-            i += 3
+            i += 1
 
-        if (i == 100):
+        if (i == SAVE_FREQUENCY):
             save_cache()
             i = 0
 
