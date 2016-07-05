@@ -8,11 +8,12 @@ import urlparse
 from glob import glob
 from imgurpython import ImgurClient
 from imgurpython.helpers.error import ImgurClientError
-from tokens import *
 import sys
 from cachetools import LRUCache
 import atexit
 import pickle
+from tokens import *
+import whitelist
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -29,7 +30,7 @@ POSTED_CACHE = LRUCache(maxsize = 128)
 CACHE_FILE = "cache.pkl"
 
 # Maximum threshold required for momentum posts
-THRESHOLD = 150
+THRESHOLD = 100
 LAST_TWEET = 0
 
 # Imgur client
@@ -48,10 +49,13 @@ def setup_connection_reddit(subreddit):
     return subreddit
 
 def should_post(post):
+    if (post.stickied):
+        return True
+
     now = time.time()
     elapsed_time = now - LAST_TWEET
     age = now - post.created_utc
-    print((post.score + post.num_comments) / age * elapsed_time)
+    print("[bot] %f" % ((post.score + post.num_comments) / age * elapsed_time))
     if ((post.score + post.num_comments) / age * elapsed_time > THRESHOLD):
         return True
     else:
@@ -74,6 +78,7 @@ def tweet_creator(subreddit_info):
             post['title'] = p.title
             post['link'] = p.permalink
             post['img_path'] = get_image(p.url)
+            post['stickied'] = p.stickied
             return post
 
     return None
@@ -160,7 +165,8 @@ def log_tweet(post, status):
     ''' Takes note of when the reddit Twitter bot tweeted a post. '''
     POSTED_CACHE[post['id']] = status.id
     global LAST_TWEET
-    LAST_TWEET = time.time()
+    if not post['stickied']:
+        LAST_TWEET = time.time()
 
 
 def main():
