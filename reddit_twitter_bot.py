@@ -121,6 +121,10 @@ def get_image(url):
         print('[bot] %s doesn\'t point to an i.imgur.com link' % url)
         return ''
 
+    if 'gifv' in url:
+        print('[bot] cannot handle gifv links')
+        return ''
+
     img_url = ''
     try:
         if 'i.imgur.com' in url:
