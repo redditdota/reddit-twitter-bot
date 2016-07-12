@@ -13,13 +13,13 @@ from cachetools import LRUCache
 import atexit
 import pickle
 from tokens import *
-import whitelist
+from whitelist import *
 
 reload(sys)
 sys.setdefaultencoding('utf8')
 
 # seconds between updates
-WAIT_TIME = 60 * 5
+WAIT_TIME = 60 * 3
 SAVE_FREQUENCY = 6
 
 # Place the name of the folder where the images are downloaded
@@ -30,7 +30,7 @@ POSTED_CACHE = LRUCache(maxsize = 128)
 CACHE_FILE = "cache.pkl"
 
 # Maximum threshold required for momentum posts
-THRESHOLD = 100
+THRESHOLD = 50
 LAST_TWEET = 0
 
 # Imgur client
@@ -92,15 +92,25 @@ def already_tweeted(pid):
         return False
 
 
-def strip_title(title, num_characters):
+def process_title(title, num_characters, is_esports=True):
     ''' Shortens the title of the post to the 140 character limit. '''
 
-    # How much you strip from the title depends on how much extra text
-    # (URLs, hashtags, etc.) that you add to the tweet
-    if len(title) <= num_characters:
-        return title
-    else:
-        return title[:num_characters] + '...'
+    print("[bot] old title: " + title)
+    if len(title) > num_characters:
+        title = title[:num_characters] + '...'
+
+    if is_esports:
+        for re in PLAYERS:
+            title = re.sub("@" + PLAYERS_TO_HANDLE[re.pattern], title, count=1)
+
+        for re in ORGS:
+            title = re.sub("@" + ORGS_TO_HANDLE[re.pattern], title, count=1)
+
+        for re in PERSONALITIES:
+            title = re.sub("@" + PERSONALITIES_TO_HANDLE[re.pattern], title, count=1)
+
+    print("[bot] new title: " + title)
+    return title[:140]
 
 def download_image(url, path):
     print('[bot] Downloading image at URL ' + url + ' to ' + path)
@@ -151,13 +161,13 @@ def tweet(post):
 
     status = None
     if img_path:
-        post_text = strip_title(post['title'], 83) + ' #dota2 ' + post['link']
+        post_text = process_title(post['title'], 83) + ' #dota2 ' + post['link']
         print('[bot] Posting this link on Twitter')
         print(post_text)
         print('[bot] With image ' + img_path)
         status = TWITTER_API.update_with_media(filename=img_path, status=post_text)
     else:
-        post_text = strip_title(post['title'], 106) + ' #dota2 ' + post['link']
+        post_text = process_title(post['title'], 106) + ' #dota2 ' + post['link']
         print('[bot] Posting this link on Twitter')
         print(post_text)
         status = TWITTER_API.update_status(status=post_text)
