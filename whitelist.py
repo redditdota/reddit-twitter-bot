@@ -1,6 +1,7 @@
 import re
 
 _TEMPLATE = r"(\b|[a-zA-Z]+\.)%s\b"
+REVERSE = re.compile(r"\(.*\)(.+)\\b")
 
 PLAYERS_TO_HANDLE = {
     # Alliance

@@ -76,7 +76,7 @@ def tweet_creator(subreddit_info):
         if not already_tweeted(p.id) and should_post(p):
             post['id'] = p.id
             post['title'] = p.title
-            post['link'] = p.permalink
+            post['link'] = "https://redd.it/%s" % p.id
             post['img_path'] = get_image(p.url)
             post['stickied'] = p.stickied
             return post
@@ -101,13 +101,13 @@ def process_title(title, num_characters, is_esports=True):
 
     if is_esports:
         for re in PLAYERS:
-            title = re.sub("@" + PLAYERS_TO_HANDLE[re.pattern], title, count=1)
+            title = re.sub("@" + PLAYERS_TO_HANDLE[REVERSE.match(re.pattern).group(1)], title, count=1)
 
         for re in ORGS:
-            title = re.sub("@" + ORGS_TO_HANDLE[re.pattern], title, count=1)
+            title = re.sub("@" + ORGS_TO_HANDLE[REVERSE.match(re.pattern).group(1)], title, count=1)
 
         for re in PERSONALITIES:
-            title = re.sub("@" + PERSONALITIES_TO_HANDLE[re.pattern], title, count=1)
+            title = re.sub("@" + PERSONALITIES_TO_HANDLE[REVERSE.match(re.pattern).group(1)], title, count=1)
 
     print("[bot] new title: " + title)
     return title[:140]
