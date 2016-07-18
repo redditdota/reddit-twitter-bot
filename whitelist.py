@@ -1,6 +1,6 @@
 import re
 
-_TEMPLATE = r"(\b|[a-zA-Z]+\.)%s\b"
+_TEMPLATE = r"(?<!\@)(\b|[a-zA-Z]+\.)%s\b"
 REVERSE = re.compile(r"\(.*\)(.+)\\b")
 
 PLAYERS_TO_HANDLE = {
@@ -92,6 +92,7 @@ PLAYERS_TO_HANDLE = {
     r'MinD ContRoL' : 'LiquidMinD_ctrL',
     r'MinDContRoL' : 'LiquidMinD_ctrL',
     r'JerAx' : 'liquidjerax',
+    r'Kuro' : 'liquidkuroky',
     r'KuroKy' : 'liquidkuroky',
     # Team Secret
     r'Arteezy' : 'arteezy',
@@ -199,6 +200,7 @@ PERSONALITIES = map(lambda name : re.compile(_TEMPLATE % name) if len(name) > 2 
 ORGS_TO_HANDLE = {
     # West
     r'Alliance' : 'theAllianceGG',
+    r'[A]lliance' : 'theAllianceGG',
     r'The Alliance' : 'theAllianceGG',
     r'compLexity Gaming' :  'compLexityLive',
     r'compLexity' :  'compLexityLive',
@@ -216,13 +218,10 @@ ORGS_TO_HANDLE = {
     r'Na\'Vi' : 'NatusVincere',
     r'OG' : 'OGDota2',
     r'Polarity' : 'PolarityDota2',
-    r'Team Empire' : 'Team_Empire',
-    r'Empire' : 'Team_Empire',
-    r'Team Liquid' : 'teamliquidpro',
-    r'Liquid' : 'teamliquidpro',
+    r'(Team )?Empire' : 'Team_Empire',
+    r'(Team )?Liquid' : 'teamliquidpro',
     r'TL' : 'teamliquidpro',
-    r'Team Secret' : 'teamsecret',
-    r'Secret' : 'teamsecret',
+    r'(Team )?Secret' : 'teamsecret',
     r'Team Spirit' : 'Team__Spirit',
     r'Vega Squadron' : 'VegaSquadron',
     r'Vega' : 'VegaSquadron',

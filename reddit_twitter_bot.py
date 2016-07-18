@@ -109,8 +109,11 @@ def process_title(title, num_characters, is_esports=True):
         for re in PERSONALITIES:
             title = re.sub("@" + PERSONALITIES_TO_HANDLE[REVERSE.match(re.pattern).group(1)], title, count=1)
 
+    if (title[0] == '@'):
+	title = "." + title
+
     print("[bot] new title: " + title)
-    return title[:140]
+    return title[:115]
 
 def download_image(url, path):
     print('[bot] Downloading image at URL ' + url + ' to ' + path)
@@ -161,7 +164,7 @@ def tweet(post):
 
     status = None
     if img_path:
-        post_text = process_title(post['title'], 83) + ' #dota2 ' + post['link']
+        post_text = process_title(post['title'], 80) + ' #dota2 ' + post['link']
         print('[bot] Posting this link on Twitter')
         print(post_text)
         print('[bot] With image ' + img_path)
