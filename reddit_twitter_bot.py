@@ -41,6 +41,9 @@ TWITTER_AUTH_HANDLER = tweepy.OAuthHandler(TWITTER_CONSUMER_KEY, TWITTER_CONSUME
 TWITTER_AUTH_HANDLER.set_access_token(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET)
 TWITTER_API = tweepy.API(TWITTER_AUTH_HANDLER)
 
+# logging
+LOG = open("messages", 'a') 
+
 def setup_connection_reddit(subreddit):
     ''' Creates a c/#onnection to the reddit API. '''
     print('[bot] Setting up connection with reddit')
@@ -175,12 +178,12 @@ def tweet(post):
         print(post_text)
         status = TWITTER_API.update_status(status=post_text)
 
-    log_tweet(post, status)
+    log_tweet(post, status.id)
 
 
-def log_tweet(post, status):
+def log_tweet(post, tweet_id):
     ''' Takes note of when the reddit Twitter bot tweeted a post. '''
-    POSTED_CACHE[post['id']] = status.id
+    POSTED_CACHE[post['id']] = tweet_id
     global LAST_TWEET
     if not post['stickied']:
         LAST_TWEET = time.time()
@@ -211,6 +214,9 @@ def main():
         # save LRU cache to file
         save_cache()
 
+	# close log file
+	LOG.close()
+
     atexit.register(on_exit)
 
     subreddit = setup_connection_reddit(SUBREDDIT)
@@ -224,6 +230,8 @@ def main():
                 tweet(post)
             except tweepy.error.TweepError as e:
                 print("[bot] " + str(e))
+                LOG.write("[bot] " + str(e) + "\n")
+    		log_tweet(post, status.id)
 
             time.sleep(WAIT_TIME * 3)
             i += 1
