@@ -141,24 +141,25 @@ def get_image(url):
         print('[bot] cannot handle gifv links')
         return ''
 
-    img_url = ''
+    img = None
     try:
-        if 'i.imgur.com' in url:
-            img_url = url
-        elif '/a/' in url:
+        if '/a/' in url:
             # pick first picture in the case of an album
             album_id = os.path.basename(urlparse.urlsplit(url).path)
             img_id = IMGUR_CLIENT.get_album(album_id).cover
-            img_url = IMGUR_CLIENT.get_image(img_id).link
+            img = IMGUR_CLIENT.get_image(img_id)
         else:
-            img_id = os.path.basename(urlparse.urlsplit(url).path)
-            img_url = IMGUR_CLIENT.get_image(img_id).link
+            img_id = os.path.basename(urlparse.urlsplit(url).path).split(".")[0]
+            img = IMGUR_CLIENT.get_image(img_id)
     except ImgurClientError as e:
         print('[bot] Image failed to download %s. Status code: %s' % (url, str(e.status_code)))
         print(e.error_message)
 
-    save_path = IMAGE_DIR + '/' + os.path.basename(urlparse.urlsplit(img_url).path)
-    download_image(img_url, save_path)
+    if (img.size > 3072 * 1000):
+        return ''
+
+    save_path = IMAGE_DIR + '/' + os.path.basename(urlparse.urlsplit(img.link).path)
+    download_image(img.link, save_path)
     return save_path
 
 
@@ -231,7 +232,7 @@ def main():
             except tweepy.error.TweepError as e:
                 print("[bot] " + str(e))
                 LOG.write("[bot] " + str(e) + "\n")
-    		log_tweet(post, status.id)
+    		log_tweet(post, "NOT_POSTED")
 
             time.sleep(WAIT_TIME * 3)
             i += 1
