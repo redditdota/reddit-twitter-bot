@@ -154,6 +154,7 @@ def get_image(url):
     except ImgurClientError as e:
         print('[bot] Image failed to download %s. Status code: %s' % (url, str(e.status_code)))
         print(e.error_message)
+        return ''
 
     if (img.size > 3072 * 1000):
         return ''
