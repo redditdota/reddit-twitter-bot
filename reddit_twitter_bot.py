@@ -208,6 +208,9 @@ def main():
         with open(CACHE_FILE, 'wb') as cache:
             pickle.dump(POSTED_CACHE, cache)
 
+        for filename in glob(IMAGE_DIR + '/*'):
+    	    os.remove(filename)
+
     def on_exit():
         # Clean out the image cache
         for filename in glob(IMAGE_DIR + '/*'):
