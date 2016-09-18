@@ -105,7 +105,9 @@ def process_title(title, num_characters, is_esports=True):
     if len(title) > num_characters:
         title = title[:num_characters] + '...'
 
-    if is_esports and ('shop' not in title.lower()):
+    if is_esports and \
+        ('shop' not in title.lower()) and \
+        ('black hole' not in title.lower()):
         for re in PLAYERS:
             title = re.sub("@" + PLAYERS_TO_HANDLE[REVERSE.match(re.pattern).group(1)], title, count=1)
 
@@ -116,10 +118,17 @@ def process_title(title, num_characters, is_esports=True):
             title = re.sub("@" + PERSONALITIES_TO_HANDLE[REVERSE.match(re.pattern).group(1)], title, count=1)
 
     if (title[0] == '@'):
-	title = "." + title
+	    title = "." + title
+
+    while (len(title) > num_characters):
+        idx = title.rfind(' ')
+        if (title[idx] == '@'):
+            title = title[:idx]
+        else:
+            title = title[:num_characters]
 
     print("[bot] new title: " + title)
-    return title[:115]
+    return title
 
 def download_image(url, path):
     print('[bot] Downloading image at URL ' + url + ' to ' + path)
@@ -210,6 +219,9 @@ def main():
     def save_cache():
         with open(CACHE_FILE, 'wb') as cache:
             pickle.dump(POSTED_CACHE, cache)
+
+        for filename in glob(IMAGE_DIR + '/*'):
+    	    os.remove(filename)
 
     def on_exit():
         # Clean out the image cache
