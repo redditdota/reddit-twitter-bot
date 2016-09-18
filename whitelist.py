@@ -178,7 +178,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'No[o]ne', 'nooneboss'),
     (r'Mag', 'FollowMag_'),
     (r'Mag~', 'FollowMag_'),
-    (r'Solo', 'dotaSolo'),
+    #(r'Solo', 'dotaSolo'),
     (r'Scandal', 'scandalisback'),
     ## Na'Vi
     (r'Ditya Ra', 'Ditya_Ra_'),
