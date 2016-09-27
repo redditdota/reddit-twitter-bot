@@ -107,6 +107,7 @@ def process_title(title, num_characters, is_esports=True):
 
     if is_esports and \
         ('shop' not in title.lower()) and \
+        ('moon shard' not in title.lower()) and \
         ('black hole' not in title.lower()):
         for re in PLAYERS:
             title = re.sub("@" + PLAYERS_TO_HANDLE[REVERSE.match(re.pattern).group(1)], title, count=1)
