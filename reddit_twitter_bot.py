@@ -16,21 +16,21 @@ from tokens import *
 from whitelist import *
 
 reload(sys)
-sys.setdefaultencoding('utf8')
+sys.setdefaultencoding("utf8")
 
 # seconds between updates
 WAIT_TIME = 60 * 3
 SAVE_FREQUENCY = 6
 
 # Place the name of the folder where the images are downloaded
-IMAGE_DIR = 'img'
+IMAGE_DIR = "img"
 
 # Place the name of the file to store the IDs of posts that have been posted
 POSTED_CACHE = LRUCache(maxsize = 128)
 CACHE_FILE = "cache.pkl"
 
 # Maximum threshold required for momentum posts
-THRESHOLD = 50
+THRESHOLD = 70
 LAST_TWEET = 0
 
 # Imgur client
@@ -42,12 +42,12 @@ TWITTER_AUTH_HANDLER.set_access_token(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN
 TWITTER_API = tweepy.API(TWITTER_AUTH_HANDLER)
 
 # logging
-LOG = open("messages", 'a')
+LOG = open("messages", "a")
 
 def setup_connection_reddit(subreddit):
-    ''' Creates a c/#onnection to the reddit API. '''
-    print('[bot] Setting up connection with reddit')
-    reddit_api = praw.Reddit('reddit Twitter tool monitoring {}'.format(subreddit))
+    """ Creates a c/#onnection to the reddit API. """
+    print("[bot] Setting up connection with reddit")
+    reddit_api = praw.Reddit("reddit Twitter tool monitoring {}".format(subreddit))
     subreddit = reddit_api.get_subreddit(subreddit)
     return subreddit
 
@@ -61,14 +61,19 @@ def should_post(post):
     now = time.time()
     elapsed_time = now - LAST_TWEET
     age = now - post.created_utc
-    print("[bot] %f" % ((post.score + post.num_comments) / age * elapsed_time))
-    if ((post.score + post.num_comments) / age * elapsed_time > THRESHOLD):
+    score = (post.score + post.num_comments) / (age ** 0.5) * elapsed_time
+
+    if (has_image(post.url)):
+        score *= 2
+
+    print("[bot] %f" % score)
+    if (score > THRESHOLD):
         return True
     else:
         return False
 
 def tweet_creator(subreddit_info):
-    print('[bot] Getting posts from reddit')
+    print("[bot] Getting posts from reddit")
 
     post = {}
     posts = subreddit_info.get_hot(limit=25)
@@ -80,35 +85,41 @@ def tweet_creator(subreddit_info):
 
     for p in posts:
         if not already_tweeted(p.id) and should_post(p):
-            post['id'] = p.id
-            post['title'] = p.title
-            post['link'] = "https://redd.it/%s" % p.id
-            post['img_path'] = get_image(p.url)
-            post['stickied'] = p.stickied
+            post["id"] = p.id
+            post["title"] = p.title
+            post["link"] = "https://redd.it/%s" % p.id
+            post["img_path"] = get_image(p.url)
+            post["stickied"] = p.stickied
+            post["flair"] = p.link_flair_text
             return post
 
     return None
 
 
 def already_tweeted(pid):
-    ''' Checks if the reddit Twitter bot has already tweeted a post. '''
+    """ Checks if the reddit Twitter bot has already tweeted a post. """
     if pid in POSTED_CACHE:
         return True
     else:
         return False
 
 
-def process_title(title, num_characters, is_esports=True):
-    ''' Shortens the title of the post to the 140 character limit. '''
+def process_title(post):
+    """ Shortens the title of the post to the 140 character limit. """
 
-    print("[bot] old title: " + title)
-    if len(title) > num_characters:
-        title = title[:num_characters] + '...'
+    print("[bot] raw title: " + post["title"])
+
+    title = post["title"]
+    suffix = " #dota2 " + post["link"]
+    #is_esports = "esports" in post["flair"].lower()
+    is_esports = True
+    title_lower = title.lower()
 
     if is_esports and \
-        ('shop' not in title.lower()) and \
-        ('moon shard' not in title.lower()) and \
-        ('black hole' not in title.lower()):
+        ("shop" not in title_lower) and \
+        ("moon shard" not in title_lower) and \
+        ("black king bar" not in title_lower) and \
+        ("black hole" not in title_lower):
         for re in PLAYERS:
             title = re.sub("@" + PLAYERS_TO_HANDLE[REVERSE.match(re.pattern).group(1)], title, count=1)
 
@@ -118,45 +129,52 @@ def process_title(title, num_characters, is_esports=True):
         for re in PERSONALITIES:
             title = re.sub("@" + PERSONALITIES_TO_HANDLE[REVERSE.match(re.pattern).group(1)], title, count=1)
 
-    if (title[0] == '@'):
+    if (title[0] == "@"):
 	    title = "." + title
 
-    while (len(title) > num_characters):
-        idx = title.rfind(' ')
-        if (title[idx] == '@'):
-            title = title[:idx]
+    # shortening to 140
+    while (len(title) > 140 - len(suffix) - 3):
+        idx = title.rfind(" ")
+        if (title[idx] == "@"):
+            title = title[:idx] + "..."
         else:
-            title = title[:num_characters]
+            title = title[:num_characters] + "..."
 
+    title = title + suffix
     print("[bot] new title: " + title)
     return title
 
 def download_image(url, path):
-    print('[bot] Downloading image at URL ' + url + ' to ' + path)
+    print("[bot] Downloading image at URL " + url + " to " + path)
     resp = requests.get(url, stream=True)
     if resp.status_code == 200:
-        with open(path, 'wb') as image_file:
+        with open(path, "wb") as image_file:
             for chunk in resp:
                 image_file.write(chunk)
         return path
     else:
-        print('[bot] Image failed to download %s. Status code: %s' % (url, str(resp.status_code)))
+        print("[bot] Image failed to download %s. Status code: %s" % (url, str(resp.status_code)))
 
 
+def has_image(url):
+    if "imgur" not in url:
+        print("[bot] %s doesn\"t point to an i.imgur.com link" % url)
+        return False
+
+    if "gifv" in url:
+        print("[bot] cannot handle gifv links")
+        return False
+
+    return True
 
 def get_image(url):
-    ''' Downloads i.imgur.com images that reddit posts may point to. '''
-    if 'imgur' not in url:
-        print('[bot] %s doesn\'t point to an i.imgur.com link' % url)
-        return ''
-
-    if 'gifv' in url:
-        print('[bot] cannot handle gifv links')
-        return ''
+    """ Downloads i.imgur.com images that reddit posts may point to. """
+    if not has_image(url):
+        return ""
 
     img = None
     try:
-        if '/a/' in url:
+        if "/a/" in url:
             # pick first picture in the case of an album
             album_id = os.path.basename(urlparse.urlsplit(url).path)
             img_id = IMGUR_CLIENT.get_album(album_id).cover
@@ -165,31 +183,35 @@ def get_image(url):
             img_id = os.path.basename(urlparse.urlsplit(url).path).split(".")[0]
             img = IMGUR_CLIENT.get_image(img_id)
     except ImgurClientError as e:
-        print('[bot] Image failed to download %s. Status code: %s' % (url, str(e.status_code)))
+        print("[bot] Image failed to download %s. Status code: %s" % (url, str(e.status_code)))
         print(e.error_message)
-        return ''
+        return ""
 
     if (img.size > 3072 * 1000):
-        return ''
+        return ""
 
-    save_path = IMAGE_DIR + '/' + os.path.basename(urlparse.urlsplit(img.link).path)
+    save_path = IMAGE_DIR + "/" + os.path.basename(urlparse.urlsplit(img.link).path)
     download_image(img.link, save_path)
     return save_path
 
 
 def tweet(post):
-    img_path = post['img_path']
+    img_path = post["img_path"]
+
+    # spoiler protection
+    if "esports" in post["flair"].lower() and ("congrat" in post["title"].lower() or "winner" in post["title"].lower()):
+        img_path = "victory.jpeg"
 
     status = None
     if img_path:
-        post_text = process_title(post['title'], 80) + ' #dota2 ' + post['link']
-        print('[bot] Posting this link on Twitter')
+        post_text = process_title(post)
+        print("[bot] Posting this link on Twitter")
         print(post_text)
-        print('[bot] With image ' + img_path)
+        print("[bot] With image " + img_path)
         status = TWITTER_API.update_with_media(filename=img_path, status=post_text)
     else:
-        post_text = process_title(post['title'], 106) + ' #dota2 ' + post['link']
-        print('[bot] Posting this link on Twitter')
+        post_text = process_title(post)
+        print("[bot] Posting this link on Twitter")
         print(post_text)
         status = TWITTER_API.update_status(status=post_text)
 
@@ -197,36 +219,36 @@ def tweet(post):
 
 
 def log_tweet(post, tweet_id):
-    ''' Takes note of when the reddit Twitter bot tweeted a post. '''
-    POSTED_CACHE[post['id']] = tweet_id
+    """ Takes note of when the reddit Twitter bot tweeted a post. """
+    POSTED_CACHE[post["id"]] = tweet_id
     global LAST_TWEET
-    if not post['stickied']:
+    if not post["stickied"]:
         LAST_TWEET = time.time()
 
 
 def main():
-    ''' Runs through the bot posting routine once. '''
+    """ Runs through the bot posting routine once. """
     # If the tweet tracking file does not already exist, create it
     if not os.path.exists(IMAGE_DIR):
         os.makedirs(IMAGE_DIR)
 
     global POSTED_CACHE
     if os.path.exists(CACHE_FILE):
-        with open(CACHE_FILE, 'rb') as cache:
+        with open(CACHE_FILE, "rb") as cache:
             POSTED_CACHE = pickle.load(cache)
     else:
         POSTED_CACHE = LRUCache(maxsize = 128)
 
     def save_cache():
-        with open(CACHE_FILE, 'wb') as cache:
+        with open(CACHE_FILE, "wb") as cache:
             pickle.dump(POSTED_CACHE, cache)
 
-        for filename in glob(IMAGE_DIR + '/*'):
+        for filename in glob(IMAGE_DIR + "/*"):
     	    os.remove(filename)
 
     def on_exit():
         # Clean out the image cache
-        for filename in glob(IMAGE_DIR + '/*'):
+        for filename in glob(IMAGE_DIR + "/*"):
     	    os.remove(filename)
 
         # save LRU cache to file
@@ -258,5 +280,5 @@ def main():
             save_cache()
             i = 0
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
