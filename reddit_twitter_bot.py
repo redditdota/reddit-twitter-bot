@@ -30,7 +30,7 @@ POSTED_CACHE = LRUCache(maxsize = 128)
 CACHE_FILE = "cache.pkl"
 
 # Maximum threshold required for momentum posts
-THRESHOLD = 70
+THRESHOLD = 30
 LAST_TWEET = 0
 
 # Imgur client
@@ -58,10 +58,11 @@ def should_post(post):
     if (post.stickied):
         return True
 
+
     now = time.time()
     elapsed_time = now - LAST_TWEET
     age = now - post.created_utc
-    score = (post.score + post.num_comments) / (age ** 0.5) * elapsed_time
+    score = (post.score + post.num_comments) / (age ** 2) * elapsed_time
 
     if (has_image(post.url)):
         score *= 2
@@ -157,8 +158,11 @@ def download_image(url, path):
 
 
 def has_image(url):
+    if is_direct_link(url):
+        return True
+
     if "imgur" not in url:
-        print("[bot] %s doesn\"t point to an i.imgur.com link" % url)
+        print("[bot] %s doesn\"t point to a known image link" % url)
         return False
 
     if "gifv" in url:
@@ -167,11 +171,11 @@ def has_image(url):
 
     return True
 
-def get_image(url):
-    """ Downloads i.imgur.com images that reddit posts may point to. """
-    if not has_image(url):
-        return ""
+def is_direct_link(url):
+    return url.endswith(("jpg", "jpeg", "png", "gif", "webp"))
 
+def get_imgur_link(url):
+    print("[bot] downloading from imgur")
     img = None
     try:
         if "/a/" in url:
@@ -185,13 +189,26 @@ def get_image(url):
     except ImgurClientError as e:
         print("[bot] Image failed to download %s. Status code: %s" % (url, str(e.status_code)))
         print(e.error_message)
-        return ""
+        return None
 
     if (img.size > 3072 * 1000):
+        return None
+
+    return img.link
+
+def get_image(url):
+    """ Downloads i.imgur.com images that reddit posts may point to. """
+    if not has_image(url):
         return ""
 
-    save_path = IMAGE_DIR + "/" + os.path.basename(urlparse.urlsplit(img.link).path)
-    download_image(img.link, save_path)
+    link = ""
+    if "imgur" in url:
+        link = get_imgur_link(url)
+    elif is_direct_link(url):
+        link = url
+
+    save_path = IMAGE_DIR + "/" + os.path.basename(urlparse.urlsplit(link).path)
+    download_image(link, save_path)
     return save_path
 
 
