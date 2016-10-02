@@ -194,6 +194,7 @@ PLAYERS = map(lambda name: re.compile(_TEMPLATE % name) if len(name) < 2 else re
 
 PERSONALITIES_TO_HANDLE = OrderedDict([
     (r'2GD', 'follow2GD'),
+    (r'AnneeDroid', 'AnneeDroid'),
     (r'Ayesee', 'ayesee'),
     (r'Blitz', 'Blitz_DotA'),
     (r'Bruno', 'StatsmanBruno'),
