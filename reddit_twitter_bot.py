@@ -5,6 +5,7 @@ import tweepy
 import time
 import os
 import urlparse
+import itertools
 from glob import glob
 from imgurpython import ImgurClient
 from imgurpython.helpers.error import ImgurClientError
@@ -30,7 +31,7 @@ POSTED_CACHE = LRUCache(maxsize = 128)
 CACHE_FILE = "cache.pkl"
 
 # Maximum threshold required for momentum posts
-THRESHOLD = 30
+THRESHOLD = 0.001
 LAST_TWEET = 0
 
 # Imgur client
@@ -77,7 +78,7 @@ def tweet_creator(subreddit_info):
     print("[bot] Getting posts from reddit")
 
     post = {}
-    posts = subreddit_info.get_hot(limit=25)
+    posts = itertools.chain(subreddit_info.get_hot(limit=25), subreddit_info.get_rising(limit=3))
     try:
         posts = list(posts)
     except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, praw.errors.HTTPException) as e:
@@ -216,7 +217,8 @@ def tweet(post):
     img_path = post["img_path"]
 
     # spoiler protection
-    if "esports" in post["flair"].lower() and ("congrat" in post["title"].lower() or "winner" in post["title"].lower()):
+    if post["flair"] and "esports" in post["flair"].lower() \
+        and ("congrat" in post["title"].lower() or "winner" in post["title"].lower()):
         img_path = "victory.jpeg"
 
     status = None
