@@ -22,9 +22,11 @@ sys.setdefaultencoding("utf8")
 # seconds between updates
 WAIT_TIME = 60 * 3
 SAVE_FREQUENCY = 6
+HASHTAG = "#dota2"
 
 # Place the name of the folder where the images are downloaded
 IMAGE_DIR = "img"
+SUPPORTED_IMAGE_TYPES = ("jpg", "jpeg", "png", "gif")
 
 # Place the name of the file to store the IDs of posts that have been posted
 POSTED_CACHE = LRUCache(maxsize = 128)
@@ -93,6 +95,7 @@ def tweet_creator(subreddit_info):
             post["title"] = p.title
             post["link"] = "https://redd.it/%s" % p.id
             post["img_path"] = get_image(p.url)
+            post["video"] = p.url if is_video(p.url) else None
             post["stickied"] = p.stickied
             post["flair"] = p.link_flair_text or ""
             return post
@@ -107,18 +110,15 @@ def already_tweeted(pid):
     else:
         return False
 
-
 def process_title(post):
     """ Shortens the title of the post to the 140 character limit. """
 
     print("[bot] raw title: " + post["title"])
 
     title = post["title"]
-    suffix = " #dota2 " + post["link"]
     #is_esports = "esports" in post["flair"].lower()
     is_esports = True
     title_lower = title.lower()
-
     if is_esports and \
         ("shop" not in title_lower) and \
         ("moon shard" not in title_lower) and \
@@ -133,16 +133,33 @@ def process_title(post):
         for re in PERSONALITIES:
             title = re.sub("@" + PERSONALITIES_TO_HANDLE[REVERSE.match(re.pattern).group(1)], title, count=1)
 
+    title = title.strip()
     if (title[0] == "@"):
 	    title = "." + title
 
+    max_length = 140 - 3
+    if post["video"]:
+        suffix = " " + post["link"] + ". " + HASHTAG + " " + post["video"]
+        max_length -= (4 + len(HASHTAG) + 23 * 2)
+    elif post["img_path"]:
+        suffix = " " + post["link"] + ". " + HASHTAG
+        max_length -= (3 + len(HASHTAG) + 23)
+    else:
+        suffix = " " + HASHTAG + " " + post["link"]
+        max_length -= (2 + len(HASHTAG) + 23)
+
+    shortened = False
     # shortening to 140
-    while (len(title) > 140 - len(suffix) - 3):
+    while (len(title) > max_length):
+        shortened = True
         idx = title.rfind(" ")
         if (title[idx] == "@"):
-            title = title[:idx] + "..."
+            title = title[:idx]
         else:
-            title = title[:num_characters] + "..."
+            title = title[:num_characters]
+
+    if (shortened):
+        title = title + "..."
 
     title = title + suffix
     print("[bot] new title: " + title)
@@ -175,7 +192,7 @@ def has_image(url):
     return True
 
 def is_direct_link(url):
-    return url.endswith(("jpg", "jpeg", "png", "gif", "webp"))
+    return url.endswith(SUPPORTED_IMAGE_TYPES)
 
 def get_imgur_link(url):
     print("[bot] downloading from imgur")
@@ -194,8 +211,22 @@ def get_imgur_link(url):
         print(e.error_message)
         return None
 
-    if (img.size > 3072 * 1000):
+    if not img.type.endswith(SUPPORTED_IMAGE_TYPES):
         return None
+
+    if img.animated:
+        if (img.size > 15e6):
+            if (img.mp4_size > 15e6):
+                print("[bot] animated image %s too large" % url)
+                return None
+            else:
+                return img.mp4
+        else:
+            return img.link
+    else:
+        if (img.size > 5e6):
+            print("[bot] image %s too large" % url)
+            return None
 
     return img.link
 
@@ -210,10 +241,15 @@ def get_image(url):
     elif is_direct_link(url):
         link = url
 
+    if link is None:
+        return None
+
     save_path = IMAGE_DIR + "/" + os.path.basename(urlparse.urlsplit(link).path)
     download_image(link, save_path)
     return save_path
 
+def is_video(link):
+    return any(site in link.lower() for site in ("youtube", "gfycat.com", "twitch", "oddshot"))
 
 def tweet(post):
     img_path = post["img_path"]
