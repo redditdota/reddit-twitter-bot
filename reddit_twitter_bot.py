@@ -33,7 +33,7 @@ POSTED_CACHE = LRUCache(maxsize = 128)
 CACHE_FILE = "cache.pkl"
 
 # Maximum threshold required for momentum posts
-THRESHOLD = 0.5
+THRESHOLD = 0.6
 LAST_TWEET = 0
 
 # Imgur client
@@ -55,19 +55,19 @@ def setup_connection_reddit(subreddit):
     return subreddit
 
 def should_post(post):
-    if (post.over_18):
+    if post.over_18:
         return False
 
-    if (post.stickied):
+    if post.stickied:
         return True
 
-    if (post.score <= 0):
+    if post.score <= 3:
         return False
 
     now = time.time()
     elapsed_time = now - LAST_TWEET
     age = now - post.created_utc
-    score = (2*post.score + post.num_comments) / (age ** 1.5) * elapsed_time
+    score = (post.score + 2 * post.num_comments) / (age ** 1.5) * elapsed_time
 
     if (has_image(post.url)):
         score *= 1.5
