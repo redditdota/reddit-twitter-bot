@@ -31,7 +31,7 @@ POSTED_CACHE = LRUCache(maxsize = 128)
 CACHE_FILE = "cache.pkl"
 
 # Maximum threshold required for momentum posts
-THRESHOLD = 0.001
+THRESHOLD = 0.4
 LAST_TWEET = 0
 
 # Imgur client
@@ -63,10 +63,10 @@ def should_post(post):
     now = time.time()
     elapsed_time = now - LAST_TWEET
     age = now - post.created_utc
-    score = (post.score + post.num_comments) / (age ** 2) * elapsed_time
+    score = (post.score + post.num_comments) / (age ** 1.5) * elapsed_time
 
     if (has_image(post.url)):
-        score *= 2
+        score *= 1.5
 
     print("[bot] %f" % score)
     if (score > THRESHOLD):
@@ -78,7 +78,7 @@ def tweet_creator(subreddit_info):
     print("[bot] Getting posts from reddit")
 
     post = {}
-    posts = itertools.chain(subreddit_info.get_hot(limit=25), subreddit_info.get_rising(limit=3))
+    posts = itertools.chain(subreddit_info.get_hot(limit=25), subreddit_info.get_rising(limit=1))
     try:
         posts = list(posts)
     except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, praw.errors.HTTPException) as e:
@@ -163,11 +163,11 @@ def has_image(url):
         return True
 
     if "imgur" not in url:
-        print("[bot] %s doesn\"t point to a known image link" % url)
+        #print("[bot] %s doesn\"t point to a known image link" % url)
         return False
 
     if "gifv" in url:
-        print("[bot] cannot handle gifv links")
+        #print("[bot] cannot handle gifv links")
         return False
 
     return True
