@@ -92,7 +92,7 @@ def tweet_creator(subreddit_info):
             post["link"] = "https://redd.it/%s" % p.id
             post["img_path"] = get_image(p.url)
             post["stickied"] = p.stickied
-            post["flair"] = p.link_flair_text
+            post["flair"] = p.link_flair_text or ""
             return post
 
     return None
@@ -217,7 +217,7 @@ def tweet(post):
     img_path = post["img_path"]
 
     # spoiler protection
-    if post["flair"] and "esports" in post["flair"].lower() \
+    if "esports" in post["flair"].lower() \
         and ("congrat" in post["title"].lower() or "winner" in post["title"].lower()):
         img_path = "victory.jpeg"
 
