@@ -156,7 +156,7 @@ def process_title(post):
         if (title[idx] == "@"):
             title = title[:idx]
         else:
-            title = title[:max_lenth]
+            title = title[:max_length]
 
     if (shortened):
         title = title + "..."
