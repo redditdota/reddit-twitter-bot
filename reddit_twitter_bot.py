@@ -61,13 +61,13 @@ def should_post(post):
     if post.stickied:
         return True
 
-    if post.score <= 3:
+    if post.score <= 3 or post.num_comments <= 10:
         return False
 
     now = time.time()
     elapsed_time = now - LAST_TWEET
     age = now - post.created_utc
-    score = (post.score + 2 * post.num_comments) / (age ** 1.4) * elapsed_time
+    score = (post.score + 2 * post.num_comments) / (age ** 1.3) * elapsed_time
 
     if (has_image(post.url)):
         score *= 1.5
