@@ -79,7 +79,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'Febby', 'Febbydota'),
     ## Team Faceless
     (r'Black^', 'BlackDotA2'),
-    (r'Black', 'BlackDotA2'),
+    #(r'Black', 'BlackDotA2'),
     (r'iceiceice', 'iceiceicedota'),
     (r'icex3', 'iceiceicedota'),
     (r'NutZ', 'NutZdoto'),
