@@ -169,10 +169,16 @@ def download_image(url, path):
     print("[bot] Downloading image at URL " + url + " to " + path)
     resp = requests.get(url, stream=True)
     if resp.status_code == 200:
-        with open(path, "wb") as image_file:
-            for chunk in resp:
-                image_file.write(chunk)
-        return path
+        try:
+            with open(path, "wb") as image_file:
+                for chunk in resp:
+                    image_file.write(chunk)
+            return path
+        except IOError as e:
+            print("[bot] Image failed to download %s. Status code: %s" % (url, str(e.status_code)))
+            print(e.error_message)
+            cleanup_images() 
+            return None
     else:
         print("[bot] Image failed to download %s. Status code: %s" % (url, str(resp.status_code)))
 
@@ -233,7 +239,7 @@ def get_imgur_link(url):
 def get_image(url):
     """ Downloads i.imgur.com images that reddit posts may point to. """
     if not has_image(url):
-        return ""
+        return None
 
     link = ""
     if "imgur" in url:
@@ -282,6 +288,11 @@ def log_tweet(post, tweet_id):
     if not post["stickied"]:
         LAST_TWEET = time.time()
 
+def cleanup_images():
+    # Clean out the image cache
+    for filename in glob(IMAGE_DIR + "/*"):
+        os.remove(filename)
+
 
 def main():
     """ Runs through the bot posting routine once. """
@@ -304,9 +315,7 @@ def main():
     	    os.remove(filename)
 
     def on_exit():
-        # Clean out the image cache
-        for filename in glob(IMAGE_DIR + "/*"):
-    	    os.remove(filename)
+        cleanup_images()
 
         # save LRU cache to file
         save_cache()
@@ -335,6 +344,7 @@ def main():
 
         if (i == SAVE_FREQUENCY):
             save_cache()
+            cleanup_images()
             i = 0
 
 if __name__ == "__main__":
