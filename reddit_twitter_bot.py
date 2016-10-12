@@ -175,7 +175,7 @@ def download_image(url, path):
                     image_file.write(chunk)
             return path
         except IOError as e:
-            print("[bot] Image failed to download %s. Status code: %s" % (url, str(e.status_code)))
+            print("[bot] Image failed to download %s." % url)
             print(e.error_message)
             cleanup_images() 
             return None
