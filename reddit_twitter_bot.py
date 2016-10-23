@@ -1,23 +1,22 @@
 import praw
 import json
 import requests
-import tweepy
+import twitter
 import time
 import os
-import urlparse
+import urllib.parse
 import itertools
 from glob import glob
 from imgurpython import ImgurClient
 from imgurpython.helpers.error import ImgurClientError
+from gfycat.client import GfycatClient
+from gfycat.error import GfycatClientError
 import sys
 from cachetools import LRUCache
 import atexit
 import pickle
 from tokens import *
 from whitelist import *
-
-reload(sys)
-sys.setdefaultencoding("utf8")
 
 # seconds between updates
 WAIT_TIME = 60 * 3
@@ -26,7 +25,8 @@ HASHTAG = "#dota2"
 
 # Place the name of the folder where the images are downloaded
 IMAGE_DIR = "img"
-SUPPORTED_IMAGE_TYPES = ("jpg", "jpeg", "png", "gif")
+SUPPORTED_IMAGE_TYPES = ("jpg", "jpeg", "png", "gif", "mp4")
+MAX_IMAGE_SIZE = 5e6
 
 # Place the name of the file to store the IDs of posts that have been posted
 POSTED_CACHE = LRUCache(maxsize = 128)
@@ -39,10 +39,14 @@ LAST_TWEET = 0
 # Imgur client
 IMGUR_CLIENT = ImgurClient(IMGUR_CLIENT_ID, IMGUR_CLIENT_SECRET)
 
+# GFYCHAT client
+GFYCAT_CLIENT = GfycatClient()
+
 # Twitter API
-TWITTER_AUTH_HANDLER = tweepy.OAuthHandler(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
-TWITTER_AUTH_HANDLER.set_access_token(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET)
-TWITTER_API = tweepy.API(TWITTER_AUTH_HANDLER)
+TWITTER_API = twitter.Api(consumer_key=TWITTER_CONSUMER_KEY,
+                          consumer_secret=TWITTER_CONSUMER_SECRET,
+                          access_token_key=TWITTER_ACCESS_TOKEN,
+                          access_token_secret=TWITTER_ACCESS_TOKEN_SECRET)
 
 # logging
 LOG = open("messages", "a")
@@ -82,7 +86,7 @@ def tweet_creator(subreddit_info):
     print("[bot] Getting posts from reddit")
 
     post = {}
-    posts = itertools.chain(subreddit_info.get_hot(limit=25), subreddit_info.get_rising(limit=1))
+    posts = itertools.chain(subreddit_info.get_hot(limit=30), subreddit_info.get_rising(limit=1))
     try:
         posts = list(posts)
     except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, praw.errors.HTTPException) as e:
@@ -135,7 +139,7 @@ def process_title(post):
 
     title = title.strip()
     if (title[0] == "@"):
-	    title = "." + title
+        title = "." + title
 
     max_length = 140 - 3
     if post["video"]:
@@ -177,7 +181,7 @@ def download_image(url, path):
         except IOError as e:
             print("[bot] Image failed to download %s." % url)
             print(e.error_message)
-            cleanup_images() 
+            cleanup_images()
             return None
     else:
         print("[bot] Image failed to download %s. Status code: %s" % (url, str(resp.status_code)))
@@ -187,15 +191,17 @@ def has_image(url):
     if is_direct_link(url):
         return True
 
-    if "imgur" not in url:
-        #print("[bot] %s doesn\"t point to a known image link" % url)
-        return False
+    if "imgur" in url:
+        return True
+
+    if "gfycat" in url:
+        return True
 
     if "gifv" in url:
         #print("[bot] cannot handle gifv links")
         return False
 
-    return True
+    return False
 
 def is_direct_link(url):
     return url.endswith(SUPPORTED_IMAGE_TYPES)
@@ -206,11 +212,11 @@ def get_imgur_link(url):
     try:
         if "/a/" in url:
             # pick first picture in the case of an album
-            album_id = os.path.basename(urlparse.urlsplit(url).path)
+            album_id = os.path.basename(urllib.parse.urlsplit(url).path)
             img_id = IMGUR_CLIENT.get_album(album_id).cover
             img = IMGUR_CLIENT.get_image(img_id)
         else:
-            img_id = os.path.basename(urlparse.urlsplit(url).path).split(".")[0]
+            img_id = os.path.basename(urllib.parse.urlsplit(url).path).split(".")[0]
             img = IMGUR_CLIENT.get_image(img_id)
     except ImgurClientError as e:
         print("[bot] Image failed to download %s. Status code: %s" % (url, str(e.status_code)))
@@ -221,8 +227,8 @@ def get_imgur_link(url):
         return None
 
     if img.animated:
-        if (img.size > 15e6):
-            if (img.mp4_size > 15e6):
+        if (img.size > MAX_IMAGE_SIZE):
+            if (img.mp4_size > MAX_IMAGE_SIZE):
                 print("[bot] animated image %s too large" % url)
                 return None
             else:
@@ -236,6 +242,35 @@ def get_imgur_link(url):
 
     return img.link
 
+def get_gfycat_link(url):
+    assert("gfycat" in url.lower())
+    name = url.split("/")[-1]
+    gfy = None
+    try:
+        gfy = GFYCAT_CLIENT.query_gfy(name)
+    except GfycatClientError as e:
+        print("[bot] Gfycat error: could not query %s" % url)
+        print(e.error_message)
+        print(e.status_code)
+        return None
+
+    if "error" in gfy or "gfyItem" not in gfy:
+        print("[bot] Gfycat error: could not query %s" % url)
+        return None
+    else:
+        gfy = gfy["gfyItem"]
+
+    link = ""
+    if "mp4Url" in gfy and int(gfy["mp4Size"]) <= MAX_IMAGE_SIZE:
+        link = gfy['mp4Url']
+    else:
+        link = gfy.get("mobileUrl", gfy.get("max5mbGif", None))
+
+    if link and link.endswith(SUPPORTED_IMAGE_TYPES):
+        return link
+    else:
+        return None
+
 def get_image(url):
     """ Downloads i.imgur.com images that reddit posts may point to. """
     if not has_image(url):
@@ -244,18 +279,20 @@ def get_image(url):
     link = ""
     if "imgur" in url:
         link = get_imgur_link(url)
+    elif "gfycat" in url:
+        link = get_gfycat_link(url)
     elif is_direct_link(url):
         link = url
 
     if link is None:
         return None
 
-    save_path = IMAGE_DIR + "/" + os.path.basename(urlparse.urlsplit(link).path)
+    save_path = IMAGE_DIR + "/" + os.path.basename(urllib.parse.urlsplit(link).path)
     download_image(link, save_path)
     return save_path
 
 def is_video(link):
-    return any(site in link.lower() for site in ("youtube", "gfycat.com", "twitch", "oddshot"))
+    return any(site in link.lower() for site in ("youtube", "twitch", "oddshot"))
 
 def tweet(post):
     img_path = post["img_path"]
@@ -271,12 +308,12 @@ def tweet(post):
         print("[bot] Posting this link on Twitter")
         print(post_text)
         print("[bot] With image " + img_path)
-        status = TWITTER_API.update_with_media(filename=img_path, status=post_text)
+        status = TWITTER_API.PostUpdate(media=img_path, status=post_text)
     else:
         post_text = process_title(post)
         print("[bot] Posting this link on Twitter")
         print(post_text)
-        status = TWITTER_API.update_status(status=post_text)
+        status = TWITTER_API.PostUpdate(status=post_text)
 
     log_tweet(post, status.id)
 
@@ -312,16 +349,15 @@ def main():
             pickle.dump(POSTED_CACHE, cache)
 
         for filename in glob(IMAGE_DIR + "/*"):
-    	    os.remove(filename)
+            os.remove(filename)
 
     def on_exit():
         cleanup_images()
-
         # save LRU cache to file
         save_cache()
 
-	# close log file
-	LOG.close()
+    # close log file
+    LOG.close()
 
     atexit.register(on_exit)
 
@@ -334,10 +370,10 @@ def main():
         else:
             try:
                 tweet(post)
-            except tweepy.error.TweepError as e:
+            except twitter.error.TwitterError as e:
                 print("[bot] " + str(e))
                 LOG.write("[bot] " + str(e) + "\n")
-    		log_tweet(post, "NOT_POSTED")
+            log_tweet(post, "NOT_POSTED")
 
             time.sleep(WAIT_TIME * 3)
             i += 1
