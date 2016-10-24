@@ -261,10 +261,10 @@ def get_gfycat_link(url):
         gfy = gfy["gfyItem"]
 
     link = ""
-    if "mp4Url" in gfy and int(gfy["mp4Size"]) <= MAX_IMAGE_SIZE:
-        link = gfy['mp4Url']
+    if "gifUrl" in gfy and int(gfy["gifSize"]) <= MAX_IMAGE_SIZE:
+        link = gfy['gifUrl']
     else:
-        link = gfy.get("mobileUrl", gfy.get("max5mbGif", None))
+        link = gfy.get("max5mbGif", None)
 
     if link and link.endswith(SUPPORTED_IMAGE_TYPES):
         return link
