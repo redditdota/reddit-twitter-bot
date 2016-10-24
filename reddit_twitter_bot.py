@@ -355,9 +355,8 @@ def main():
         cleanup_images()
         # save LRU cache to file
         save_cache()
-
-    # close log file
-    LOG.close()
+        # close log file
+        LOG.close()
 
     atexit.register(on_exit)
 
@@ -373,7 +372,7 @@ def main():
             except twitter.error.TwitterError as e:
                 print("[bot] " + str(e))
                 LOG.write("[bot] " + str(e) + "\n")
-            log_tweet(post, "NOT_POSTED")
+                log_tweet(post, "NOT_POSTED")
 
             time.sleep(WAIT_TIME * 3)
             i += 1
