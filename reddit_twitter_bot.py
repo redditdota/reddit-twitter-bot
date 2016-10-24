@@ -27,6 +27,7 @@ HASHTAG = "#dota2"
 IMAGE_DIR = "img"
 SUPPORTED_IMAGE_TYPES = ("jpg", "jpeg", "png", "gif", "mp4")
 MAX_IMAGE_SIZE = 5e6
+MAX_FRAME_RATE = 40
 
 # Place the name of the file to store the IDs of posts that have been posted
 POSTED_CACHE = LRUCache(maxsize = 128)
@@ -262,9 +263,15 @@ def get_gfycat_link(url):
 
     link = ""
     if "gifUrl" in gfy and int(gfy["gifSize"]) <= MAX_IMAGE_SIZE:
-        link = gfy['gifUrl']
+        link = gfy["gifUrl"]
     else:
-        link = gfy.get("max5mbGif", None)
+        if int(gfy["frameRate"]) < MAX_FRAME_RATE and "mp4Url" in gfy:
+            if int(gfy["mp4Size"]) <= MAX_IMAGE_SIZE * 3:
+                link = gfy["mp4Url"]
+            else:
+                link = gfy["mobileUrl"]
+        else:
+            link = gfy.get("max5mbGif", None)
 
     if link and link.endswith(SUPPORTED_IMAGE_TYPES):
         return link
