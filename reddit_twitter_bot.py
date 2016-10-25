@@ -91,7 +91,7 @@ def tweet_creator(subreddit_info):
     try:
         posts = list(posts)
     except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, praw.errors.HTTPException) as e:
-        print(e.message)
+        print(e)
         return None
 
     for p in posts:
