@@ -231,7 +231,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'Scandal', 'scandalisback'),
 ])
 
-PLAYERS = map(lambda name: re.compile(_TEMPLATE % name) if len(name) < 2 else re.compile(_TEMPLATE % name, flags=re.IGNORECASE), PLAYERS_TO_HANDLE.keys())
+PLAYERS = list(map(lambda name: re.compile(_TEMPLATE % name) if len(name) < 2 else re.compile(_TEMPLATE % name, flags=re.IGNORECASE), PLAYERS_TO_HANDLE.keys()))
 
 PERSONALITIES_TO_HANDLE = OrderedDict([
     (r'2GD', 'follow2GD'),
@@ -282,7 +282,7 @@ PERSONALITIES_TO_HANDLE = OrderedDict([
     (r'Zyori', 'ZyoriTV'),
 ])
 
-PERSONALITIES = map(lambda name: re.compile(_TEMPLATE % name) if len(name) < 2 else re.compile(_TEMPLATE % name, flags=re.IGNORECASE), PERSONALITIES_TO_HANDLE.keys())
+PERSONALITIES = list(map(lambda name: re.compile(_TEMPLATE % name) if len(name) < 2 else re.compile(_TEMPLATE % name, flags=re.IGNORECASE), PERSONALITIES_TO_HANDLE.keys()))
 
 ORGS_TO_HANDLE = OrderedDict([
     # West
@@ -375,4 +375,4 @@ ORGS_TO_HANDLE = OrderedDict([
     (r'moonduck', 'moonduckTV'),
 ])
 
-ORGS = map(lambda name: re.compile(_TEMPLATE % name) if len(name) < 2 else re.compile(_TEMPLATE % name, flags=re.IGNORECASE), ORGS_TO_HANDLE.keys())
+ORGS = list(map(lambda name: re.compile(_TEMPLATE % name) if len(name) < 2 else re.compile(_TEMPLATE % name, flags=re.IGNORECASE), ORGS_TO_HANDLE.keys()))

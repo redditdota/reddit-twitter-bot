@@ -129,14 +129,14 @@ def process_title(post):
         ("moon shard" not in title_lower) and \
         ("black king bar" not in title_lower) and \
         ("black hole" not in title_lower):
-        for re in PLAYERS:
-            title = re.sub("@" + PLAYERS_TO_HANDLE[REVERSE.match(re.pattern).group(1)], title, count=1)
+        for player in PLAYERS:
+            title = player.sub("@" + PLAYERS_TO_HANDLE[REVERSE.match(player.pattern).group(1)], title, count=1)
 
-        for re in ORGS:
-            title = re.sub("@" + ORGS_TO_HANDLE[REVERSE.match(re.pattern).group(1)], title, count=1)
+        for org in ORGS:
+            title = org.sub("@" + ORGS_TO_HANDLE[REVERSE.match(org.pattern).group(1)], title, count=1)
 
-        for re in PERSONALITIES:
-            title = re.sub("@" + PERSONALITIES_TO_HANDLE[REVERSE.match(re.pattern).group(1)], title, count=1)
+        for people in PERSONALITIES:
+            title = people.sub("@" + PERSONALITIES_TO_HANDLE[REVERSE.match(people.pattern).group(1)], title, count=1)
 
     title = title.strip()
     if (title[0] == "@"):
