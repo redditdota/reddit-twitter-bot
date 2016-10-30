@@ -301,12 +301,21 @@ def get_image(url):
 def is_video(link):
     return any(site in link.lower() for site in ("youtube", "twitch", "oddshot"))
 
+def is_spoiler(title):
+    title_lower = title.lower()
+    if "congrat" in title_lower:
+        return True
+
+    if "winner" in title_lower and bracket not in title_lower:
+        return True
+
+    return False
+
 def tweet(post):
     img_path = post["img_path"]
 
     # spoiler protection
-    if "esports" in post["flair"].lower() \
-        and ("congrat" in post["title"].lower() or "winner" in post["title"].lower()):
+    if "esports" in post["flair"].lower() and is_spoiler(post["title"]):
         img_path = "victory.jpeg"
 
     status = None
