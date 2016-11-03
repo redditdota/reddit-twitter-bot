@@ -55,7 +55,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'MinD_ContRoL', 'LiquidMinD_ctrL'),
     (r'MinD ContRoL', 'LiquidMinD_ctrL'),
     (r'MinDContRoL', 'LiquidMinD_ctrL'),
-    (r'BuLba', 'BuLbaDotA'),
+    (r'BuLba', 'BuLbaDotA_'),
     (r'Kuro', 'liquidkuroky'),
     (r'KuroKy', 'liquidkuroky'),
     ## Team Secret
