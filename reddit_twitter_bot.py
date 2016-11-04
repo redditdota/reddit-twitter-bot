@@ -306,7 +306,7 @@ def is_spoiler(title):
     if "congrat" in title_lower:
         return True
 
-    if "winner" in title_lower and bracket not in title_lower:
+    if "winner" in title_lower and "bracket" not in title_lower:
         return True
 
     return False
