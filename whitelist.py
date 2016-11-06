@@ -251,6 +251,8 @@ PERSONALITIES_TO_HANDLE = OrderedDict([
     (r'esex', 'esportsexpress'),
     (r'esportsexpress', 'esportsexpress'),
     (r'GoDz', 'BTSGoDz'),
+    (r'grandgrant', 'GranDGranT'),
+    (r'grant', 'GranDGranT'),
     (r'Hot_bid', 'Hot_Bid'),
     (r'Hotbid', 'Hot_Bid'),
     (r'KotLGuy', 'KotLguy'),

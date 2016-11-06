@@ -315,8 +315,9 @@ def tweet(post):
     img_path = post["img_path"]
 
     # spoiler protection
-    if "esports" in post["flair"].lower() and is_spoiler(post["title"]):
-        img_path = "victory.jpeg"
+    #if "esports" in post["flair"].lower() and is_spoiler(post["title"]):
+    if is_spoiler(post["title"]):
+        img_path = "Dota2_NP-Jiggy.gif"
 
     status = None
     if img_path:
