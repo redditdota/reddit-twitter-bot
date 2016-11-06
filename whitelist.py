@@ -46,7 +46,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'BigDaddy', 'OG_BDN0tail'),
     (r'Ana', 'anadota99'),
     (r's4', 's4dota'),
-    (r'JerAx', 'liquidjerax'),
+    (r'JerAx', 'iamJERAX'),
     (r'Fly', 'Fly_dota2'),
     ## Team Liquid
     (r'MATUMBAMAN', 'LiquidMatumba'),
