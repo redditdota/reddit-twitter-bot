@@ -72,13 +72,17 @@ def should_post(post):
     now = time.time()
     elapsed_time = now - LAST_TWEET
     age = now - post.created_utc
+
+    if age > 2 * 3600:
+        return True
+
     score = (post.score + 2 * post.num_comments) / (age ** 1.35) * elapsed_time
 
     if (has_image(post.url)):
         score *= 1.5
 
     print("[bot] %f" % score)
-    if (score > THRESHOLD):
+    if score > THRESHOLD:
         return True
     else:
         return False
