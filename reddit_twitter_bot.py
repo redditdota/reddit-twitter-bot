@@ -294,6 +294,8 @@ def get_image(url):
         link = get_gfycat_link(url)
     elif is_direct_link(url):
         link = url
+    elif "reddituploads" in url:
+        link = url
 
     if link is None:
         return None
