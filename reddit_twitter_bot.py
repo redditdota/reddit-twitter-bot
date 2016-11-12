@@ -34,7 +34,7 @@ POSTED_CACHE = LRUCache(maxsize = 128)
 CACHE_FILE = "cache.pkl"
 
 # Maximum threshold required for momentum posts
-THRESHOLD = 0.6
+THRESHOLD = 0.59
 LAST_TWEET = 0
 
 # Imgur client
