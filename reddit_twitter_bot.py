@@ -19,7 +19,7 @@ from tokens import *
 from whitelist import *
 
 # seconds between updates
-WAIT_TIME = 60 * 3
+WAIT_TIME = 60 * 5
 SAVE_FREQUENCY = 6
 HASHTAG = "#dota2"
 
@@ -72,9 +72,6 @@ def should_post(post):
     now = time.time()
     elapsed_time = now - LAST_TWEET
     age = now - post.created_utc
-
-    if elapsed_time < 2 * 10 * 60:
-        return False
 
     if age > 2 * 3600:
         return True
