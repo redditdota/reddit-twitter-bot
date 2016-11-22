@@ -91,6 +91,14 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'Ohaiyo', 'Titan_Ohaiyo'),
     (r'Demon', 'dotademon'),
 
+    ## Wings
+    (r'Faith_bian', 'Faith_bian'),
+    (r'Faithbian', 'Faith_bian'),
+    (r'Faith bian', 'Faith_bian'),
+    (r'innocence', 'y1122Innocence'),
+    (r'y`', 'y1122Innocence'),
+
+
     # Free Agents
     (r'Fogged', 'FoggedDota'),
     (r'FATA-', 'liquidfata'),
@@ -255,6 +263,7 @@ PERSONALITIES_TO_HANDLE = OrderedDict([
     (r'grant', 'GranDGranT'),
     (r'Hot_bid', 'Hot_Bid'),
     (r'Hotbid', 'Hot_Bid'),
+    (r'kbbq', 'KBBQDotA'),
     (r'KotLGuy', 'KotLguy'),
     (r'LD', 'LDdota'),
     (r'Leafeator', 'Leafeator'),
@@ -271,6 +280,7 @@ PERSONALITIES_TO_HANDLE = OrderedDict([
     (r'ODPixel', 'ODPixel'),
     (r'Purge', 'PurgeGamers'),
     (r'Sheever', 'sheevergaming'),
+    (r'ReDeYe', 'PaulChaloner'),
     (r'SirActionSlacks', 'SirActionSlacks'),
     (r'Slacks', 'SirActionSlacks'),
     (r'SUNSfan', 'SUNSfanTV'),
