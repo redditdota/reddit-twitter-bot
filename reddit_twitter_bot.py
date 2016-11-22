@@ -202,6 +202,9 @@ def has_image(url):
     if "gfycat" in url:
         return True
 
+    if "reddituploads" in url:
+        return True
+
     if "gifv" in url:
         #print("[bot] cannot handle gifv links")
         return False
