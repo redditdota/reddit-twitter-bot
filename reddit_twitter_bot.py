@@ -131,6 +131,7 @@ def process_title(post):
     if is_esports and \
         ("shop" not in title_lower) and \
         ("moon shard" not in title_lower) and \
+        ("shadow demon" not in title_lower) and \
         ("black king bar" not in title_lower) and \
         ("black hole" not in title_lower):
         for player in PLAYERS:
