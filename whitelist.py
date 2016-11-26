@@ -55,9 +55,9 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'MinD_ContRoL', 'LiquidMinD_ctrL'),
     (r'MinD ContRoL', 'LiquidMinD_ctrL'),
     (r'MinDContRoL', 'LiquidMinD_ctrL'),
-    (r'BuLba', 'BuLbaDotA_'),
     (r'Kuro', 'liquidkuroky'),
     (r'KuroKy', 'liquidkuroky'),
+    (r'gh', 'GHGOD_DOTA'),
     ## Team Secret
     (r'MidOne', 'midonedota2'),
     (r'Miduan', 'midonedota2'),
@@ -151,6 +151,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'MiSeRy', 'MiSeRyDOTA'),
     (r'moosery', 'MiSeRyDOTA'),
     (r'MiSeRyTheSLAYER', 'MiSeRyDOTA'),
+    (r'BuLba', 'BuLbaDotA_'),
     # Evil Geniuses
     (r'Arteezy', 'arteezy'),
     (r'rtz', 'arteezy'),
