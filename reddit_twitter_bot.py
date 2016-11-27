@@ -15,6 +15,7 @@ import sys
 from cachetools import LRUCache
 import atexit
 import pickle
+from random import randint
 from tokens import *
 from whitelist import *
 
@@ -327,7 +328,7 @@ def tweet(post):
     # spoiler protection
     #if "esports" in post["flair"].lower() and is_spoiler(post["title"]):
     if is_spoiler(post["title"]):
-        img_path = "Dota2_NP-Jiggy.gif"
+        img_path = "victory/%d.gif" % randint(0, 10)
 
     status = None
     if img_path:
