@@ -149,10 +149,10 @@ def process_title(post):
 
     max_length = 140 - 3
     if post["video"]:
-        suffix = " " + post["link"] + ". " + HASHTAG + " " + post["video"]
+        suffix = " " + post["link"] + " " + HASHTAG + " " + post["video"]
         max_length -= (4 + len(HASHTAG) + 23 * 2)
     elif post["img_path"]:
-        suffix = " " + post["link"] + ". " + HASHTAG
+        suffix = " " + post["link"] + " " + HASHTAG
         max_length -= (3 + len(HASHTAG) + 23)
     else:
         suffix = " " + HASHTAG + " " + post["link"]
