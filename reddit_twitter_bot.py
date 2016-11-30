@@ -105,7 +105,7 @@ def tweet_creator(subreddit_info):
             post["title"] = p.title
             post["link"] = "https://redd.it/%s" % p.id
             post["img_path"] = get_image(p.url)
-            post["video"] = p.url if is_video(p.url) else None
+            post["url"] = p.url if is_video(p.url) or "twitter" in p.url else None
             post["stickied"] = p.stickied
             post["flair"] = p.link_flair_text or ""
             return post
@@ -149,8 +149,8 @@ def process_title(post):
         title = "." + title
 
     max_length = 140 - 3
-    if post["video"]:
-        suffix = " " + post["link"] + " " + HASHTAG + " " + post["video"]
+    if post["url"]:
+        suffix = " " + post["link"] + " " + HASHTAG + " " + post["url"]
         max_length -= (4 + len(HASHTAG) + 23 * 2)
     elif post["img_path"]:
         suffix = " " + post["link"] + " " + HASHTAG
