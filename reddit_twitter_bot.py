@@ -60,7 +60,7 @@ def setup_connection_reddit(subreddit):
         client_id=REDDIT_CLIENT_ID,
         client_secret=REDDIT_CLIENT_SECRET,
         user_agent="reddit Twitter tool monitoring {}".format(subreddit))
-    subreddit = reddit_api.get_subreddit(subreddit)
+    subreddit = reddit_api.subreddit(subreddit)
     return subreddit
 
 def should_post(post):
@@ -95,7 +95,7 @@ def tweet_creator(subreddit_info):
     print("[bot] Getting posts from reddit")
 
     post = {}
-    posts = itertools.chain(subreddit_info.get_hot(limit=30), subreddit_info.get_rising(limit=1))
+    posts = itertools.chain(subreddit_info.hot(limit=30), subreddit_info.rising(limit=1))
     try:
         posts = list(posts)
     except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, praw.errors.HTTPException) as e:
