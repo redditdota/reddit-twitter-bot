@@ -56,7 +56,10 @@ LOG = open("messages", "a")
 def setup_connection_reddit(subreddit):
     """ Creates a c/#onnection to the reddit API. """
     print("[bot] Setting up connection with reddit")
-    reddit_api = praw.Reddit("reddit Twitter tool monitoring {}".format(subreddit))
+    reddit_api = praw.Reddit(
+        client_id=REDDIT_CLIENT_ID,
+        client_secret=REDDIT_CLIENT_SECRET,
+        user_agent="reddit Twitter tool monitoring {}".format(subreddit))
     subreddit = reddit_api.get_subreddit(subreddit)
     return subreddit
 
