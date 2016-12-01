@@ -400,7 +400,7 @@ def main():
         else:
             try:
                 tweet(post)
-            except twitter.error.TwitterError as e:
+            except (twitter.error.TwitterError, requests.exceptions.ConnectionError) as e:
                 print("[bot] " + str(e))
                 LOG.write("[bot] " + str(e) + "\n")
                 log_tweet(post, "NOT_POSTED")
