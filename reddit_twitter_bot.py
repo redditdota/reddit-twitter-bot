@@ -98,7 +98,7 @@ def tweet_creator(subreddit_info):
     posts = itertools.chain(subreddit_info.hot(limit=30), subreddit_info.rising(limit=1))
     try:
         posts = list(posts)
-    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, praw.exceptions.PRAWException, praw.exceptions.RequestException) as e:
+    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, praw.exceptions.PRAWException, TimeoutError) as e:
         print(e)
         return None
 
