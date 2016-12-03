@@ -18,6 +18,7 @@ import pickle
 from random import randint
 from tokens import *
 from whitelist import *
+from prawcore import RequestException
 
 # seconds between updates
 WAIT_TIME = 60 * 5
@@ -98,7 +99,7 @@ def tweet_creator(subreddit_info):
     posts = itertools.chain(subreddit_info.hot(limit=30), subreddit_info.rising(limit=1))
     try:
         posts = list(posts)
-    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, praw.exceptions.PRAWException, TimeoutError) as e:
+    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, praw.exceptions.PRAWException, TimeoutError, RequestException) as e:
         print(e)
         return None
 
