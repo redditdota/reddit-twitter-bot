@@ -102,7 +102,6 @@ def tweet_creator(subreddit_info):
         print(e)
         return None
 
-    posts = [reddit_api.submission("5fbty2")]
     post = {}
     for p in posts:
         if not already_tweeted(p.id) and should_post(p):
