@@ -95,7 +95,6 @@ def should_post(post):
 def tweet_creator(subreddit_info):
     print("[bot] Getting posts from reddit")
 
-    post = {}
     posts = itertools.chain(subreddit_info.hot(limit=30), subreddit_info.rising(limit=1))
     try:
         posts = list(posts)
@@ -103,12 +102,14 @@ def tweet_creator(subreddit_info):
         print(e)
         return None
 
+    posts = [reddit_api.submission("5fbty2")]
+    post = {}
     for p in posts:
         if not already_tweeted(p.id) and should_post(p):
             post["id"] = p.id
             post["title"] = p.title
             post["link"] = "https://redd.it/%s" % p.id
-            post["img_path"] = get_image(p.url)
+            post["img_paths"] = get_images(p.url)
             post["url"] = p.url if is_video(p.url) or "twitter" in p.url else None
             post["stickied"] = p.stickied
             post["flair"] = p.link_flair_text or ""
@@ -156,7 +157,7 @@ def process_title(post):
     if post["url"]:
         suffix = " " + post["link"] + " " + HASHTAG + " " + post["url"]
         max_length -= (4 + len(HASHTAG) + 23 * 2)
-    elif post["img_path"]:
+    elif post["img_paths"]:
         suffix = " " + post["link"] + " " + HASHTAG
         max_length -= (3 + len(HASHTAG) + 23)
     else:
@@ -220,23 +221,7 @@ def has_image(url):
 def is_direct_link(url):
     return url.endswith(SUPPORTED_IMAGE_TYPES)
 
-def get_imgur_link(url):
-    print("[bot] downloading from imgur")
-    img = None
-    try:
-        if "/a/" in url:
-            # pick first picture in the case of an album
-            album_id = os.path.basename(urllib.parse.urlsplit(url).path)
-            img_id = IMGUR_CLIENT.get_album(album_id).cover
-            img = IMGUR_CLIENT.get_image(img_id)
-        else:
-            img_id = os.path.basename(urllib.parse.urlsplit(url).path).split(".")[0]
-            img = IMGUR_CLIENT.get_image(img_id)
-    except ImgurClientError as e:
-        print("[bot] Image failed to download %s. Status code: %s" % (url, str(e.status_code)))
-        print(e.error_message)
-        return None
-
+def process_imgur_link(img):
     if not img.type.endswith(SUPPORTED_IMAGE_TYPES):
         return None
 
@@ -255,6 +240,31 @@ def get_imgur_link(url):
             return None
 
     return img.link
+
+def get_imgur_links(url):
+    print("[bot] downloading from imgur")
+    imgs = []
+    try:
+        if "/a/" in url or 'gallery' in url:
+            album_id = os.path.basename(urllib.parse.urlsplit(url).path)
+            album = IMGUR_CLIENT.get_album(album_id)
+            for image in IMGUR_CLIENT.get_album(album_id).images:
+                img_link = process_imgur_link(IMGUR_CLIENT.get_image(image['id']))
+                if img_link:
+                    imgs.append(img_link)
+                if len(imgs) >= 4:
+                    break
+        else:
+            img_id = os.path.basename(urllib.parse.urlsplit(url).path).split(".")[0]
+            img_link = process_imgur_link(IMGUR_CLIENT.get_image(img_id))
+            imgs = [img_link] if img_link else []
+    except ImgurClientError as e:
+        print("[bot] Image failed to download %s. Status code: %s" % (url, str(e.status_code)))
+        print(e.error_message)
+        return None
+
+    print(imgs)
+    return imgs
 
 def get_gfycat_link(url):
     assert("gfycat" in url.lower())
@@ -291,27 +301,30 @@ def get_gfycat_link(url):
     else:
         return None
 
-def get_image(url):
+def get_images(url):
     """ Downloads i.imgur.com images that reddit posts may point to. """
     if not has_image(url):
         return None
 
-    link = ""
+    links = []
     if "imgur" in url:
-        link = get_imgur_link(url)
+        links = get_imgur_links(url)
     elif "gfycat" in url:
-        link = get_gfycat_link(url)
+        links = [get_gfycat_link(url)]
     elif is_direct_link(url):
-        link = url
+        links = [url]
     elif "reddituploads" in url:
-        link = url
+        links = [url]
 
-    if link is None:
+    if len(links) == 0:
         return None
 
-    save_path = IMAGE_DIR + "/" + os.path.basename(urllib.parse.urlsplit(link).path)
-    download_image(link, save_path)
-    return save_path
+    save_paths = []
+    for link in links:
+        save_path = IMAGE_DIR + "/" + os.path.basename(urllib.parse.urlsplit(link).path)
+        download_image(link, save_path)
+        save_paths.append(save_path)
+    return save_paths
 
 def is_video(link):
     return any(site in link.lower() for site in ("youtube", "twitch", "oddshot"))
@@ -327,20 +340,20 @@ def is_spoiler(title):
     return False
 
 def tweet(post):
-    img_path = post["img_path"]
+    img_paths = post["img_paths"]
 
     # spoiler protection
     #if "esports" in post["flair"].lower() and is_spoiler(post["title"]):
-    if is_spoiler(post["title"]):
-        img_path = "victory/%d.gif" % randint(0, 10)
+    if img_paths is None and post["url"] is None and is_spoiler(post["title"]):
+        img_paths = ["victory/%d.gif" % randint(0, 10)]
 
     status = None
-    if img_path:
+    if img_paths and len(img_paths) > 0:
         post_text = process_title(post)
         print("[bot] Posting this link on Twitter")
         print(post_text)
-        print("[bot] With image " + img_path)
-        status = TWITTER_API.PostUpdate(media=img_path, status=post_text)
+        print("[bot] With images " + str(img_paths))
+        status = TWITTER_API.PostUpdate(media=img_paths, status=post_text)
     else:
         post_text = process_title(post)
         print("[bot] Posting this link on Twitter")
