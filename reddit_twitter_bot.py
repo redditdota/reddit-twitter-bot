@@ -21,7 +21,7 @@ from whitelist import *
 from prawcore import RequestException
 
 # seconds between updates
-WAIT_TIME = 60 * 5
+WAIT_TIME = 60 * 2
 SAVE_FREQUENCY = 6
 HASHTAG = "#dota2"
 
@@ -36,7 +36,7 @@ POSTED_CACHE = LRUCache(maxsize = 128)
 CACHE_FILE = "cache.pkl"
 
 # Maximum threshold required for momentum posts
-THRESHOLD = 0.42
+THRESHOLD = 0.5
 LAST_TWEET = 0
 
 # Imgur client
@@ -71,7 +71,7 @@ def should_post(post):
     if post.stickied:
         return True
 
-    if post.score + post.num_comments <= 20:
+    if post.score + post.num_comments <= 40:
         return False
 
     now = time.time()
@@ -95,7 +95,7 @@ def should_post(post):
 def tweet_creator(subreddit_info):
     print("[bot] Getting posts from reddit")
 
-    posts = itertools.chain(subreddit_info.hot(limit=30), subreddit_info.rising(limit=1))
+    posts = itertools.chain(subreddit_info.hot(limit=30), subreddit_info.rising(limit=5))
     try:
         posts = list(posts)
     except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, praw.exceptions.PRAWException, TimeoutError, RequestException) as e:
@@ -243,24 +243,28 @@ def process_imgur_link(img):
 def get_imgur_links(url):
     print("[bot] downloading from imgur")
     imgs = []
+    img_id = ""
+    if "/a/" in url or 'gallery' in url:
+        img_id = os.path.basename(urllib.parse.urlsplit(url).path)
+    else:
+        img_id = os.path.basename(urllib.parse.urlsplit(url).path).split(".")[0]
+
     try:
-        if "/a/" in url or 'gallery' in url:
-            album_id = os.path.basename(urllib.parse.urlsplit(url).path)
-            album = IMGUR_CLIENT.get_album(album_id)
-            for image in IMGUR_CLIENT.get_album(album_id).images:
-                img_link = process_imgur_link(IMGUR_CLIENT.get_image(image['id']))
-                if img_link:
-                    imgs.append(img_link)
-                if len(imgs) >= 4:
-                    break
-        else:
-            img_id = os.path.basename(urllib.parse.urlsplit(url).path).split(".")[0]
+        album = IMGUR_CLIENT.get_album(img_id)
+        for image in IMGUR_CLIENT.get_album(img_id).images:
+            img_link = process_imgur_link(IMGUR_CLIENT.get_image(image['id']))
+            if img_link:
+                imgs.append(img_link)
+            if len(imgs) >= 4 or img_link.endswith(("gif", "mp4")):
+                break
+    except ImgurClientError as e:
+        try:
             img_link = process_imgur_link(IMGUR_CLIENT.get_image(img_id))
             imgs = [img_link] if img_link else []
-    except ImgurClientError as e:
-        print("[bot] Image failed to download %s. Status code: %s" % (url, str(e.status_code)))
-        print(e.error_message)
-        return None
+        except ImgurClientError as e:
+            print("[bot] Image failed to download %s. Status code: %s" % (url, str(e.status_code)))
+            print(e.error_message)
+            return []
 
     print(imgs)
     return imgs
@@ -336,6 +340,9 @@ def is_spoiler(title):
     if "winner" in title_lower and "bracket" not in title_lower:
         return True
 
+    if "post" in title_lower:
+        return True
+
     return False
 
 def tweet(post):
@@ -352,7 +359,10 @@ def tweet(post):
         print("[bot] Posting this link on Twitter")
         print(post_text)
         print("[bot] With images " + str(img_paths))
-        status = TWITTER_API.PostUpdate(media=img_paths, status=post_text)
+        if len(img_paths) == 1:
+            status = TWITTER_API.PostUpdate(media=img_paths[0], status=post_text)
+        else:
+            status = TWITTER_API.PostUpdate(media=img_paths, status=post_text)
     else:
         post_text = process_title(post)
         print("[bot] Posting this link on Twitter")
@@ -418,7 +428,7 @@ def main():
                 LOG.write("[bot] " + str(e) + "\n")
                 log_tweet(post, "NOT_POSTED")
 
-            time.sleep(WAIT_TIME * 3)
+            time.sleep(WAIT_TIME * 2)
             i += 1
 
         if (i == SAVE_FREQUENCY):
