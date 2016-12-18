@@ -21,7 +21,7 @@ from whitelist import *
 from prawcore import RequestException
 
 # seconds between updates
-WAIT_TIME = 60 * 2
+WAIT_TIME = 60
 SAVE_FREQUENCY = 6
 HASHTAG = "#dota2"
 
@@ -36,7 +36,7 @@ POSTED_CACHE = LRUCache(maxsize = 128)
 CACHE_FILE = "cache.pkl"
 
 # Maximum threshold required for momentum posts
-THRESHOLD = 0.5
+THRESHOLD = 0.35
 LAST_TWEET = 0
 
 # Imgur client
@@ -71,7 +71,7 @@ def should_post(post):
     if post.stickied:
         return True
 
-    if post.score + post.num_comments <= 40:
+    if post.score + post.num_comments <= 30:
         return False
 
     now = time.time()
@@ -81,7 +81,7 @@ def should_post(post):
     if age > 1 * 3600:
         return True
 
-    score = (post.score +  post.num_comments) / (age ** 1.35) * elapsed_time
+    score = (post.score +  post.num_comments) / (age ** 1.4) * elapsed_time
 
     if (has_image(post.url)):
         score *= 1.5
@@ -95,7 +95,7 @@ def should_post(post):
 def tweet_creator(subreddit_info):
     print("[bot] Getting posts from reddit")
 
-    posts = itertools.chain(subreddit_info.hot(limit=30), subreddit_info.rising(limit=5))
+    posts = itertools.chain(subreddit_info.hot(limit=30), subreddit_info.rising(limit=3))
     try:
         posts = list(posts)
     except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, praw.exceptions.PRAWException, TimeoutError, RequestException) as e:
@@ -152,7 +152,7 @@ def process_title(post):
     if (title[0] == "@"):
         title = "." + title
 
-    max_length = 140 - 3
+    max_length = 139 - 3
     if post["url"]:
         suffix = " " + post["link"] + " " + HASHTAG + " " + post["url"]
         max_length -= (4 + len(HASHTAG) + 23 * 2)
@@ -164,7 +164,7 @@ def process_title(post):
         max_length -= (2 + len(HASHTAG) + 23)
 
     shortened = False
-    # shortening to 140
+    # shortening to 139
     while (len(title) > max_length):
         shortened = True
         idx = title.rfind(" ")
@@ -227,7 +227,7 @@ def process_imgur_link(img):
     if img.animated:
         if (img.size > MAX_IMAGE_SIZE):
             if (img.mp4_size > MAX_IMAGE_SIZE):
-                print("[bot] animated image %s too large" % url)
+                print("[bot] animated image %s too large" % img.link)
                 return None
             else:
                 return img.mp4
@@ -235,7 +235,7 @@ def process_imgur_link(img):
             return img.link
     else:
         if (img.size > 5e6):
-            print("[bot] image %s too large" % url)
+            print("[bot] image %s too large" % img.link)
             return None
 
     return img.link
