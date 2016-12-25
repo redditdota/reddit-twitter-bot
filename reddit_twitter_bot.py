@@ -18,10 +18,10 @@ import pickle
 from random import randint
 from tokens import *
 from whitelist import *
-from prawcore import RequestException
+from prawcore import RequestException,ServerError
 
 # seconds between updates
-WAIT_TIME = 60
+WAIT_TIME = 60 * 2
 SAVE_FREQUENCY = 6
 HASHTAG = "#dota2"
 
@@ -36,7 +36,7 @@ POSTED_CACHE = LRUCache(maxsize = 128)
 CACHE_FILE = "cache.pkl"
 
 # Maximum threshold required for momentum posts
-THRESHOLD = 0.35
+THRESHOLD = 0.4
 LAST_TWEET = 0
 
 # Imgur client
@@ -71,7 +71,7 @@ def should_post(post):
     if post.stickied:
         return True
 
-    if post.score + post.num_comments <= 30:
+    if post.score + post.num_comments <= 40:
         return False
 
     now = time.time()
@@ -98,7 +98,7 @@ def tweet_creator(subreddit_info):
     posts = itertools.chain(subreddit_info.hot(limit=30), subreddit_info.rising(limit=3))
     try:
         posts = list(posts)
-    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, praw.exceptions.PRAWException, TimeoutError, RequestException) as e:
+    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, praw.exceptions.PRAWException, TimeoutError, RequestException, ServerError) as e:
         print(e)
         return None
 
@@ -428,7 +428,7 @@ def main():
                 LOG.write("[bot] " + str(e) + "\n")
                 log_tweet(post, "NOT_POSTED")
 
-            time.sleep(WAIT_TIME * 2)
+            time.sleep(WAIT_TIME * 3)
             i += 1
 
         if (i == SAVE_FREQUENCY):
