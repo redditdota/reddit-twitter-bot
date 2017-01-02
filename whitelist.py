@@ -57,7 +57,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'MinDContRoL', 'LiquidMinD_ctrL'),
     (r'Kuro', 'liquidkuroky'),
     (r'KuroKy', 'liquidkuroky'),
-    (r'gh', 'GHGOD_DOTA'),
+    (r'gh', 'LiquidGh_'),
     ## Team Secret
     (r'MidOne', 'midonedota2'),
     (r'Miduan', 'midonedota2'),
