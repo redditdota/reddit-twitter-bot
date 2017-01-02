@@ -75,7 +75,6 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'ChuaN', 'iGChuaN'),
     (r'XtiNcT', 'XtinctDota'),
     (r'WinteR', 'WinteRDota'),
-    (r'DJ', 'DjardelJicko'),
     (r'QO', 'qodota'),
     (r'Febby', 'Febbydota'),
     ## Team Faceless
@@ -85,6 +84,11 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'icex3', 'iceiceicedota'),
     (r'NutZ', 'NutZdoto'),
     (r'Meracle', 'Meracleeeee'),
+
+    ## Execration
+    (r'Kim0', 'XctNKim0'),
+    (r'DJ', 'DjardelJicko'),
+    (r'Abed', 'abedyusop/'),
 
     ## Fnatic
     (r'Mushi', 'Mushi_Chai'),
