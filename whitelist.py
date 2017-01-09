@@ -287,6 +287,7 @@ PERSONALITIES_TO_HANDLE = OrderedDict([
     (r'NoobFromUA', 'NoobFromUA'),
     (r'Noxville', 'NoxvilleZA'),
     (r'ODPixel', 'ODPixel'),
+    (r'PimpmuckL', 'PimpmuckL'),
     (r'Purge', 'PurgeGamers'),
     (r'Sheever', 'sheevergaming'),
     (r'ReDeYe', 'PaulChaloner'),
