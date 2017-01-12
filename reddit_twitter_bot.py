@@ -35,7 +35,7 @@ POSTED_CACHE = LRUCache(maxsize = 128)
 CACHE_FILE = "cache.pkl"
 
 # Maximum threshold required for momentum posts
-THRESHOLD = 0.4
+THRESHOLD = 0.45
 LAST_TWEET = 0
 
 # Imgur client
@@ -97,7 +97,7 @@ def tweet_creator(subreddit_info):
     posts = itertools.chain(subreddit_info.hot(limit=30), subreddit_info.rising(limit=3))
     try:
         posts = list(posts)
-    except Exception e:
+    except Exception as e:
         print(e)
         return None
 
@@ -373,6 +373,9 @@ def tweet(post):
 
 def log_tweet(post, tweet_id):
     """ Takes note of when the reddit Twitter bot tweeted a post. """
+    if tweet_id == "NOT_POSTED":
+        return
+
     POSTED_CACHE[post["id"]] = tweet_id
     global LAST_TWEET
     if not post["stickied"]:
