@@ -435,10 +435,10 @@ def main():
                 log_tweet(post, "NOT_POSTED")
 
             time.sleep(WAIT_TIME * 3)
+            save_cache()
             i += 1
 
         if (i == SAVE_FREQUENCY):
-            save_cache()
             cleanup_images()
             i = 0
 
