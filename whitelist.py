@@ -338,6 +338,8 @@ ORGS_TO_HANDLE = OrderedDict([
     (r'Digital Chaos', 'DigitalChaosGG'),
     (r'DC', 'DigitalChaosGG'),
     (r'Dotabuff', 'DOTABUFF'),
+    (r'Dotapit', 'DotaPit'),
+    (r'Dota Pit', 'DotaPit'),
     (r'DreamHack', 'DreamHack'),
     (r'DreamLeague', 'DHDreamLeague'),
     (r'Escape Gaming', 'TheEscapeGaming'),
