@@ -20,7 +20,7 @@ from tokens import *
 from whitelist import *
 
 # seconds between updates
-WAIT_TIME = 60 * 2
+WAIT_TIME = 60 * 3
 SAVE_FREQUENCY = 6
 HASHTAG = "#dota2"
 
@@ -35,7 +35,7 @@ POSTED_CACHE = LRUCache(maxsize = 128)
 CACHE_FILE = "cache.pkl"
 
 # Maximum threshold required for momentum posts
-THRESHOLD = 0.45
+THRESHOLD = 0.5
 LAST_TWEET = 0
 
 # Imgur client
@@ -425,7 +425,11 @@ def main():
         else:
             try:
                 tweet(post)
-            except (twitter.error.TwitterError, requests.exceptions.ConnectionError) as e:
+            except twitter.error.TwitterError as e:
+                print("[bot] " + str(e))
+                LOG.write("[bot] " + str(e) + "\n")
+                log_tweet(post, "ERROR")
+            except requests.exceptions.ConnectionError as e:
                 print("[bot] " + str(e))
                 LOG.write("[bot] " + str(e) + "\n")
                 log_tweet(post, "NOT_POSTED")

@@ -33,6 +33,8 @@ PLAYERS_TO_HANDLE = OrderedDict([
     ## Kaipi
     (r'BOne7', 'bOne7dota'),
     (r'SingSing', 'Sing2X'),
+    (r'Sing Sing', 'Sing2X'),
+    (r'Sing', 'Sing2X'),
     (r'SexyBamboe', 'SexyBamboe'),
     (r'Bamboe', 'SexyBamboe'),
     (r'TheCoon', '33Dota'),
@@ -261,6 +263,9 @@ PERSONALITIES_TO_HANDLE = OrderedDict([
     (r'Charlie', 'CharlieYang'),
     (r'CharlieYang', 'CharlieYang'),
     (r'Cyborgmatt', 'Cyborgmatt'),
+    (r'day9', 'day9tv'),
+    (r'day 9', 'day9tv'),
+    (r'day[9]', 'day9tv'),
     (r'diredude', 'diredude'),
     (r'dotabuff', 'dotabuff'),
     (r'Draskyl', 'Draskyl'),
@@ -305,6 +310,8 @@ PERSONALITIES_TO_HANDLE = OrderedDict([
     (r'v1lat', 'v1lat'),
     (r'Wyk', 'wykrhm'),
     (r'wykrhm', 'wykrhm'),
+    (r'xyclopzz', 'Xyclopzz'),
+    (r'xyclopz', 'Xyclopzz'),
     (r'Zyori', 'ZyoriTV'),
 ])
 
