@@ -404,9 +404,6 @@ def main():
         with open(CACHE_FILE, "wb") as cache:
             pickle.dump(POSTED_CACHE, cache)
 
-        for filename in glob(IMAGE_DIR + "/*"):
-            os.remove(filename)
-
     def on_exit():
         cleanup_images()
         # save LRU cache to file
