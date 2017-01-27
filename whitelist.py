@@ -155,7 +155,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'w33', 'w33haa'),
     (r'w33haa', 'w33haa'),
     (r'MoonMeander', 'MoonMeanderated'),
-    #(r'Moon', 'MoonMeanderated'),
+    (r'Moon', 'MoonMeanderated'),
     (r'Saksa', 'Saksadota'),
     (r'MiSeRy', 'MiSeRyDOTA'),
     (r'moosery', 'MiSeRyDOTA'),
