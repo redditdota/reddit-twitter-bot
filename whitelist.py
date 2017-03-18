@@ -76,7 +76,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'Kpii', 'kpiidota'),
     (r'ChuaN', 'NewbeeChuaN'),
     (r'XtiNcT', 'XtinctDota'),
-    (r'WinteR', 'WinteRDota'),
+    #(r'WinteR', 'WinteRDota'),
     (r'QO', 'qodota'),
     (r'Febby', 'Febbydota'),
     ## Team Faceless
@@ -85,7 +85,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'iceiceice', 'iceiceicedota'),
     (r'icex3', 'iceiceicedota'),
     (r'NutZ', 'NutZdoto'),
-    (r'Meracle', 'Meracleeeee'),
+    (r'Meracle', 'MskiMeracle'),
 
     ## Execration
     (r'Kim0', 'XctNKim0'),
@@ -374,8 +374,8 @@ ORGS_TO_HANDLE = OrderedDict([
     (r'Power Rangers', 'prdota2'),
     (r'Red Bull', 'redbullesports'),
     (r'(Team )?Empire', 'Team_Empire'),
-    (r'(Team )?Liquid', 'teamliquidpro'),
-    (r'TL', 'teamliquidpro'),
+    (r'(Team )?Liquid', 'TeamLiquid'),
+    (r'TL', 'TeamLiquid'),
     (r'(Team )?Secret', 'teamsecret'),
     (r'Team Spirit', 'Team__Spirit'),
     (r'TrackDota', 'TrackDota'),
@@ -425,9 +425,10 @@ ORGS_TO_HANDLE = OrderedDict([
     (r'TNC', 'tncproteam'),
     (r'Execration', 'ExecrationGG'),
     (r'XctN', 'ExecrationGG'),
-    (r'YouTube Gaming', 'YouTubeGaming'),
-    (r'YouTubeGaming', 'YouTubeGaming'),
-    (r'YouTube', 'YouTubeGaming'),
+    (r'SG e-sports', 'SGe_sports'),
+    (r'SG esports', 'SGe_sports'),
+    (r'SGesports', 'SGe_sports'),
+
     # Studios
     (r'BeyondTheSummit', 'beyondthesummit'),
     (r'BTS', 'beyondthesummit'),
@@ -435,6 +436,10 @@ ORGS_TO_HANDLE = OrderedDict([
     (r'jD', 'joinDOTA'),
     (r'moonduckTV', 'moonduckTV'),
     (r'moonduck', 'moonduckTV'),
+
+    (r'YouTube Gaming', 'YouTubeGaming'),
+    (r'YouTubeGaming', 'YouTubeGaming'),
+    (r'YouTube', 'YouTubeGaming'),
 ])
 
 ORGS = list(map(lambda name: re.compile(_TEMPLATE % name) if len(name) < 2 else re.compile(_TEMPLATE % name, flags=re.IGNORECASE), ORGS_TO_HANDLE.keys()))
