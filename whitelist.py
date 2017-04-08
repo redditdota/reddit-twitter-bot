@@ -85,7 +85,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'iceiceice', 'iceiceicedota'),
     (r'icex3', 'iceiceicedota'),
     (r'NutZ', 'NutZdoto'),
-    (r'Meracle', 'MskiMeracle'),
+    (r'Meracle', 'Meracleeeeee'),
 
     ## Execration
     (r'Kim0', 'XctNKim0'),
@@ -325,7 +325,7 @@ PERSONALITIES = list(map(lambda name: re.compile(_TEMPLATE % name) if len(name) 
 
 ORGS_TO_HANDLE = OrderedDict([
     # West
-    (r'Ad Finem', 'AdFinemgg'),
+    #(r'Ad Finem', 'AdFinemgg'),
     (r'Alliance', 'theAllianceGG'),
     (r'[A]lliance', 'theAllianceGG'),
     (r'The Alliance', 'theAllianceGG'),
@@ -361,6 +361,7 @@ ORGS_TO_HANDLE = OrderedDict([
     (r'Friendship, Dedication, Love', 'fdldota'),
     (r'Natus Vincere', 'NatusVincere'),
     (r'Kaipi', 'KaipiDota'),
+    (r'mousesports', 'mousesports'),
     (r'MLG', 'MLG'),
     (r'NaVi', 'NatusVincere'),
     (r'Na Vi', 'NatusVincere'),
