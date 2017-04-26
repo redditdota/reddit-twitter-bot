@@ -90,7 +90,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     ## Execration
     (r'Kim0', 'XctNKim0'),
     (r'DJ', 'DjardelJicko'),
-    (r'Abed', 'abedyusop/'),
+    (r'Abed', 'abedyusop'),
 
     ## Fnatic
     (r'Mushi', 'Mushi_Chai'),
