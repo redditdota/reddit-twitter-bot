@@ -13,8 +13,8 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'Madara', 'madaradota2'),
     (r'ThuG', 'ThuGdota2'),
     (r'SkyLark', 'skylarkXZ'),
-    (r'Maybe Next Time', 'mntdota2'),
-    (r'mnt', 'mntdota2'),
+    (r'Maybe Next Time', 'mntdota'),
+    (r'mnt', 'mntdota'),
     (r'SsaSpartan', 'ssaspartan'),
     ## Alliance
     (r'Loda', 'LodaBerg'),
