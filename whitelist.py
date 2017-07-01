@@ -361,6 +361,7 @@ ORGS_TO_HANDLE = OrderedDict([
     (r'Evil Geniuses', 'EvilGeniuses'),
     (r'EG', 'EvilGeniuses'),
     (r'Fantastic Five', 'Fantastic__Five'),
+    (r'Team Freedom', 'TEAMFREEDOMgg'),
     (r'FYM Hot Sauce', 'FYMHotSauce'),
     (r'FYMHotSauce', 'FYMHotSauce'),
     (r'FYM', 'FYMHotSauce'),
