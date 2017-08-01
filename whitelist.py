@@ -314,6 +314,8 @@ PERSONALITIES_TO_HANDLE = OrderedDict([
     (r'Tobi', 'TobiWanDOTA'),
     (r'TobiWan', 'TobiWanDOTA'),
     (r'TobiWans', 'TobiWanDOTA'),
+    (r'Tonya', 'TonyaPredko'),
+    (r'TonyaPredko', 'TonyaPredko'),
     (r'TorteDeLini', 'TorteDeLini'),
     (r'Torte', 'TorteDeLini'),
     (r'TrentPax', 'TrentPax'),
