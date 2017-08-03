@@ -129,11 +129,8 @@ def process_title(post):
     print("[bot] raw title: " + post["title"])
 
     title = post["title"]
-    #is_esports = "esports" in post["flair"].lower()
-    is_esports = True
     title_lower = title.lower()
-    if is_esports and \
-        ("shop" not in title_lower) and \
+    if ("shop" not in title_lower) and \
         ("dark moon" not in title_lower) and \
         ("darkmoon" not in title_lower) and \
         ("moon shard" not in title_lower) and \
@@ -153,16 +150,21 @@ def process_title(post):
     if (title[0] == "@"):
         title = "." + title
 
+    is_esports = "esports" in post["flair"].lower()
+    hashtag = HASHTAG
+    if is_esports:
+        hashtag = HASHTAG + " #ti7"
+
     max_length = 139 - 3
     if post["url"]:
-        suffix = " " + post["link"] + " " + HASHTAG + " " + post["url"]
-        max_length -= (4 + len(HASHTAG) + 23 * 2)
+        suffix = " " + post["link"] + " " + hashtag + " " + post["url"]
+        max_length -= (4 + len(hashtag) + 23 * 2)
     elif post["img_paths"]:
-        suffix = " " + post["link"] + " " + HASHTAG
-        max_length -= (3 + len(HASHTAG) + 23)
+        suffix = " " + post["link"] + " " + hashtag
+        max_length -= (3 + len(hashtag) + 23)
     else:
-        suffix = " " + HASHTAG + " " + post["link"]
-        max_length -= (2 + len(HASHTAG) + 23)
+        suffix = " " + hashtag + " " + post["link"]
+        max_length -= (2 + len(hashtag) + 23)
 
     shortened = False
     # shortening to 139
