@@ -80,7 +80,7 @@ def should_post(post):
     if age > 1 * 3600:
         return True
 
-    score = (post.score +  post.num_comments) / (age ** 1.4) * elapsed_time
+    score = (1.5 * post.score +  post.num_comments) / (age ** 1.4) * elapsed_time
 
     if (has_image(post.url)):
         score *= 1.5
