@@ -336,6 +336,8 @@ PERSONALITIES_TO_HANDLE = OrderedDict([
 PERSONALITIES = list(map(lambda name: re.compile(_TEMPLATE % name) if len(name) < 2 else re.compile(_TEMPLATE % name, flags=re.IGNORECASE), PERSONALITIES_TO_HANDLE.keys()))
 
 ORGS_TO_HANDLE = OrderedDict([
+    (r'Artifact', 'PlayArtifact'),
+
     # West
     #(r'Ad Finem', 'AdFinemgg'),
     (r'Alliance', 'theAllianceGG'),
