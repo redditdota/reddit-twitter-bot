@@ -153,7 +153,7 @@ def process_title(post):
     is_esports = "esports" in post["flair"].lower()
     hashtag = HASHTAG
     if is_esports:
-        hashtag = HASHTAG + " #TI7"
+        hashtag = HASHTAG + " #postTI7shuffle"
 
     max_length = 139 - 3
     if post["url"]:
