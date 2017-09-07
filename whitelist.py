@@ -386,7 +386,7 @@ ORGS_TO_HANDLE = OrderedDict([
     (r'Na\'Vi', 'NatusVincere'),
     (r'Northern Arena', 'northernarena'),
     (r'NorthernArena', 'northernarena'),
-    (r'(Team )?NP', 'NPDotA'),
+    #(r'(Team )?NP', 'NPDotA'),
     (r'OG', 'OGDota2'),
     (r'PGL', 'pglesports'),
     (r'Polarity', 'PolarityDota2'),
