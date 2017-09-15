@@ -393,6 +393,7 @@ ORGS_TO_HANDLE = OrderedDict([
     (r'Power Rangers', 'prdota2'),
     (r'Red Bull', 'redbullesports'),
     (r'(Team )?Empire', 'Team_Empire'),
+    (r'(Team )?Kinguin', 'teamkinguin'),
     (r'(Team )?Liquid', 'TeamLiquid'),
     (r'TL', 'TeamLiquid'),
     (r'(Team )?Secret', 'teamsecret'),
