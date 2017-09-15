@@ -379,6 +379,7 @@ ORGS_TO_HANDLE = OrderedDict([
     (r'Friendship, Dedication, Love', 'fdldota'),
     (r'Natus Vincere', 'NatusVincere'),
     (r'Kaipi', 'KaipiDota'),
+    (r'M19', 'm19official'),
     (r'mousesports', 'mousesports'),
     (r'MLG', 'MLG'),
     (r'NaVi', 'NatusVincere'),
