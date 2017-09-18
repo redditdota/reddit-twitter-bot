@@ -94,7 +94,7 @@ def should_post(post):
 def tweet_creator(subreddit_info):
     print("[bot] Getting posts from reddit")
 
-    posts = itertools.chain(subreddit_info.hot(limit=30), subreddit_info.rising(limit=3))
+    posts = itertools.chain(subreddit_info.hot(limit=35), subreddit_info.rising(limit=3))
     try:
         posts = list(posts)
     except Exception as e:
