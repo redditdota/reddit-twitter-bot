@@ -256,8 +256,11 @@ def get_imgur_links(url):
             img_link = process_imgur_link(IMGUR_CLIENT.get_image(image['id']))
             if img_link:
                 imgs.append(img_link)
-            if len(imgs) >= 4 or img_link.endswith(("gif", "mp4")):
-                break
+                if img_link.endswith(("gif", "mp4")):
+                    break
+
+            if len(imgs) >= 4:
+                    break
     except ImgurClientError as e:
         try:
             img_link = process_imgur_link(IMGUR_CLIENT.get_image(img_id))
