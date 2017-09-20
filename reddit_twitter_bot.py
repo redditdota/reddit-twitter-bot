@@ -292,11 +292,11 @@ def get_gfycat_link(url):
         gfy = gfy["gfyItem"]
 
     link = ""
-    if "gifUrl" in gfy and "gifSize" in gfy and int(gfy["gifSize"]) <= MAX_IMAGE_SIZE:
+    if "gifUrl" in gfy and "gifSize" in gfy and float(gfy["gifSize"]) <= MAX_IMAGE_SIZE:
         link = gfy["gifUrl"]
     else:
-        if int(gfy["frameRate"]) < MAX_FRAME_RATE and "mp4Url" in gfy:
-            if int(gfy["mp4Size"]) <= MAX_IMAGE_SIZE * 3:
+        if float(gfy["frameRate"]) < MAX_FRAME_RATE and "mp4Url" in gfy:
+            if float(gfy["mp4Size"]) <= MAX_IMAGE_SIZE * 3:
                 link = gfy["mp4Url"]
             else:
                 link = gfy["mobileUrl"]
