@@ -399,6 +399,7 @@ ORGS_TO_HANDLE = OrderedDict([
     (r'TL', 'TeamLiquid'),
     (r'(Team )?Secret', 'teamsecret'),
     (r'Team Spirit', 'Team__Spirit'),
+    (r'(Team )?Tuho', 'TeamTuho'),
     (r'(The )?Manila Master(s)?', 'themastersgg'),
     (r'TrackDota', 'TrackDota'),
     (r'Twitch', 'Twitch'),
