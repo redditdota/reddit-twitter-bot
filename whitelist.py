@@ -61,6 +61,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'KuroKy', 'liquidkuroky'),
     (r'gh', 'LiquidGh_'),
     ## Team Secret
+    (r'Ace', 'AceDota'),
     (r'MidOne', 'midonedota2'),
     (r'Miduan', 'midonedota2'),
     #(r'FoREV', 'Forev_Lee'),
