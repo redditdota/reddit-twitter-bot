@@ -1,4 +1,7 @@
 tokens.py*
+artifact.py*
+dota2.py*
+test.py*
 posted_posts.txt
 img/
 *.pyc

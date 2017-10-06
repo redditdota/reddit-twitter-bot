@@ -22,7 +22,6 @@ from whitelist import *
 # seconds between updates
 WAIT_TIME = 60 * 3
 SAVE_FREQUENCY = 6
-HASHTAG = "#dota2"
 
 # Place the name of the folder where the images are downloaded
 IMAGE_DIR = "img"
@@ -32,7 +31,7 @@ MAX_FRAME_RATE = 40
 
 # Place the name of the file to store the IDs of posts that have been posted
 POSTED_CACHE = LRUCache(maxsize = 128)
-CACHE_FILE = "cache.pkl"
+CACHE_FILE = None
 
 # Maximum threshold required for momentum posts
 THRESHOLD = 0.5
@@ -45,10 +44,8 @@ IMGUR_CLIENT = ImgurClient(IMGUR_CLIENT_ID, IMGUR_CLIENT_SECRET)
 GFYCAT_CLIENT = GfycatClient()
 
 # Twitter API
-TWITTER_API = twitter.Api(consumer_key=TWITTER_CONSUMER_KEY,
-                          consumer_secret=TWITTER_CONSUMER_SECRET,
-                          access_token_key=TWITTER_ACCESS_TOKEN,
-                          access_token_secret=TWITTER_ACCESS_TOKEN_SECRET)
+TWITTER_API = None
+HASHTAG = None
 
 # logging
 LOG = open("messages", "a")
@@ -151,18 +148,17 @@ def process_title(post):
         title = "." + title
 
     is_esports = "esports" in post["flair"].lower()
-    hashtag = HASHTAG
 
     max_length = 139 - 3
     if post["url"]:
-        suffix = " " + post["link"] + " " + hashtag + " " + post["url"]
-        max_length -= (4 + len(hashtag) + 23 * 2)
+        suffix = " " + post["link"] + " " + HASHTAG + " " + post["url"]
+        max_length -= (4 + len(HASHTAG) + 23 * 2)
     elif post["img_paths"]:
-        suffix = " " + post["link"] + " " + hashtag
-        max_length -= (3 + len(hashtag) + 23)
+        suffix = " " + post["link"] + " " + HASHTAG
+        max_length -= (3 + len(HASHTAG) + 23)
     else:
-        suffix = " " + hashtag + " " + post["link"]
-        max_length -= (2 + len(hashtag) + 23)
+        suffix = " " + HASHTAG + " " + post["link"]
+        max_length -= (2 + len(HASHTAG) + 23)
 
     shortened = False
     # shortening to 139
@@ -393,11 +389,26 @@ def cleanup_images():
 
 
 def main():
+    assert(len(sys.argv) == 2)
+    global SUBREDDIT
+    SUBREDDIT = sys.argv[1]
+    token = __import__(SUBREDDIT)
+
+    global TWITTER_API
+    TWITTER_API = twitter.Api(consumer_key = token.TWITTER_CONSUMER_KEY,
+                          consumer_secret = token.TWITTER_CONSUMER_SECRET,
+                          access_token_key = token.TWITTER_ACCESS_TOKEN,
+                          access_token_secret = token.TWITTER_ACCESS_TOKEN_SECRET)
+    global HASHTAG
+    HASHTAG = token.HASHTAG
+
     """ Runs through the bot posting routine once. """
     # If the tweet tracking file does not already exist, create it
     if not os.path.exists(IMAGE_DIR):
         os.makedirs(IMAGE_DIR)
 
+    global CACHE_FILE
+    CACHE_FILE = "cache/%s.pkl" % SUBREDDIT
     global POSTED_CACHE
     if os.path.exists(CACHE_FILE):
         with open(CACHE_FILE, "rb") as cache:
