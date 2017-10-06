@@ -9,4 +9,5 @@ img/
 *.swo
 .DS_Store
 *.pkl
-messages
+msgs/*
+*.sh
