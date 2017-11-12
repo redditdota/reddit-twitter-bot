@@ -20,7 +20,7 @@ from tokens import *
 from whitelist import *
 
 # seconds between updates
-WAIT_TIME = 60 * 3
+WAIT_TIME = 60 * 2
 SAVE_FREQUENCY = 6
 
 # Place the name of the folder where the images are downloaded
@@ -447,7 +447,7 @@ def main():
                 LOG.write("[bot] " + str(e) + "\n")
                 log_tweet(post, "NOT_POSTED")
 
-            time.sleep(WAIT_TIME * 3)
+            time.sleep(WAIT_TIME * 2)
             save_cache()
             i += 1
 
