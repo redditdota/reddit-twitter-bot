@@ -367,7 +367,7 @@ ORGS_TO_HANDLE = OrderedDict([
     (r'Dota Pit', 'DotaPit'),
     (r'Double Dim(ension)?', 'DoubleDimensio1'),
     (r'DreamHack', 'DreamHackDota'),
-    (r'DreamLeague', 'DHDreamLeague'),
+    (r'DreamLeague', 'DreamHackDota'),
     (r'Escape Gaming', 'TheEscapeGaming'),
     #(r'Escape', 'TheEscapeGaming'),
     (r'Effect Gaming', 'effectgg'),
