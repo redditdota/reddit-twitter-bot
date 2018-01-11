@@ -256,6 +256,8 @@ PERSONALITIES_TO_HANDLE = OrderedDict([
     (r'2GD', 'follow2GD'),
     (r'AnneeDroid', 'AnneeDroid'),
     (r'Ayesee', 'ayesee'),
+    (r'Blake Martinez', 'Big__Blake50'),
+    (r'Blake', 'Big__Blake50'),
     (r'Blitz', 'Blitz_DotA'),
     (r'breakycpk', 'breakycpk'),
     (r'breaky', 'breakycpk'),
