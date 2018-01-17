@@ -95,7 +95,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
 
     ## Fnatic
     (r'Mushi', 'Mushi_Chai'),
-    (r'Ohaiyo', 'Titan_Ohaiyo'),
+    (r'Ohaiyo', 'ohyohyohy'),
     (r'Demon', 'dotademon'),
 
     ## Wings
