@@ -120,6 +120,10 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'Justin', 'jkdota'),
 
     # NA Doto
+    (r'BSJ', 'BananaSlamJamma'),
+    (r'BananaSlamJamma', 'BananaSlamJamma'),
+    (r'Monkeys Forever', 'MonkeysDota'),
+    (r'Monkeys_Forever', 'MonkeysDota'),
     (r'ixmike88', 'ixmike88'),
     (r'ixmike', 'ixmike88'),
     (r'Stan King', 'StanKingDota'),
