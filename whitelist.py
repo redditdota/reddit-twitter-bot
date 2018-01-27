@@ -108,8 +108,8 @@ PLAYERS_TO_HANDLE = OrderedDict([
 
     # Free Agents
     (r'Fogged', 'FoggedDota'),
-    (r'FATA-', 'MyM_EHome_Fata'),
-    (r'FATA', 'MyM_EHome_Fata'),
+    (r'FATA-', 'DotaFata'),
+    (r'FATA', 'DotaFata'),
     (r'AdmiralBulldog', 'AdmiralBulldog'),
     (r'Bulldog', 'AdmiralBulldog'),
     (r'Bulldong', 'AdmiralBulldog'),
