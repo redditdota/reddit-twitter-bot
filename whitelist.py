@@ -197,7 +197,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'KingR', 'R1nater'),
 
     ## Vega
-    (r'Iceberg', 'Icebergdota'),
+    #(r'Iceberg', 'Icebergdota'),
     (r'Mag', 'FollowMag_'),
     (r'Mag~', 'FollowMag_'),
     (r'fng', 'fnggshka'),
@@ -388,6 +388,7 @@ ORGS_TO_HANDLE = OrderedDict([
     (r'FYM', 'FYMHotSauce'),
     (r'FDL', 'fdldota'),
     (r'Friendship, Dedication, Love', 'fdldota'),
+    (r'Iceberg', 'IcebergEsports'),
     (r'Imt', 'Immortals'),
     (r'Immortals', 'Immortals'),
     (r'GES', 'geschampionship'),
