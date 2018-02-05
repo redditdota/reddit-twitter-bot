@@ -108,8 +108,8 @@ PLAYERS_TO_HANDLE = OrderedDict([
 
     # Free Agents
     (r'Fogged', 'FoggedDota'),
-    (r'FATA-', 'MyM_EHome_Fata'),
-    (r'FATA', 'MyM_EHome_Fata'),
+    (r'FATA-', 'DotaFata'),
+    (r'FATA', 'DotaFata'),
     (r'AdmiralBulldog', 'AdmiralBulldog'),
     (r'Bulldog', 'AdmiralBulldog'),
     (r'Bulldong', 'AdmiralBulldog'),
@@ -197,7 +197,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'KingR', 'R1nater'),
 
     ## Vega
-    (r'Iceberg', 'Icebergdota'),
+    #(r'Iceberg', 'Icebergdota'),
     (r'Mag', 'FollowMag_'),
     (r'Mag~', 'FollowMag_'),
     (r'fng', 'fnggshka'),
@@ -388,6 +388,7 @@ ORGS_TO_HANDLE = OrderedDict([
     (r'FYM', 'FYMHotSauce'),
     (r'FDL', 'fdldota'),
     (r'Friendship, Dedication, Love', 'fdldota'),
+    (r'Iceberg', 'IcebergEsports'),
     (r'Imt', 'Immortals'),
     (r'Immortals', 'Immortals'),
     (r'GES', 'geschampionship'),
@@ -437,10 +438,10 @@ ORGS_TO_HANDLE = OrderedDict([
     (r'VeggiesEsports', 'VeggieEsports'),
     (r'Veggies', 'VeggieEsports'),
     (r'VEC', 'VeggieEsports'),
-    (r'Virtus.Pro', 'TeamVirtuspro'),
-    (r'Virtus Pro', 'TeamVirtuspro'),
-    (r'VirtusPro', 'TeamVirtuspro'),
-    (r'VP', 'TeamVirtuspro'),
+    (r'Virtus.Pro', 'virtuspro'),
+    (r'Virtus Pro', 'virtuspro'),
+    (r'VirtusPro', 'virtuspro'),
+    (r'VP', 'virtuspro'),
     # East
     (r'LGD Gaming', 'LGDgaming'),
     (r'LGD', 'LGDgaming'),
