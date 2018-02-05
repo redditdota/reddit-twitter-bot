@@ -360,14 +360,14 @@ def tweet(post):
         print(post_text)
         print("[bot] With images " + str(img_paths))
         if len(img_paths) == 1:
-            status = TWITTER_API.PostUpdate(media=img_paths[0], status=post_text)
+            status = TWITTER_API.statuses.update(media=img_paths[0], status=post_text)
         else:
-            status = TWITTER_API.PostUpdate(media=img_paths, status=post_text)
+            status = TWITTER_API.statuses.update(media=img_paths, status=post_text)
     else:
         post_text = process_title(post)
         print("[bot] Posting this link on Twitter")
         print(post_text)
-        status = TWITTER_API.PostUpdate(status=post_text)
+        status = TWITTER_API.statuses.update(status=post_text)
 
     log_tweet(post, status.id)
 
@@ -395,10 +395,12 @@ def main():
     token = __import__(SUBREDDIT)
 
     global TWITTER_API
-    TWITTER_API = twitter.Api(consumer_key = token.TWITTER_CONSUMER_KEY,
-                          consumer_secret = token.TWITTER_CONSUMER_SECRET,
-                          access_token_key = token.TWITTER_ACCESS_TOKEN,
-                          access_token_secret = token.TWITTER_ACCESS_TOKEN_SECRET)
+    TWITTER_API = twitter.Twitter(auth=twitter.OAuth(
+        token.TWITTER_ACCESS_TOKEN,
+        token.TWITTER_ACCESS_TOKEN_SECRET,
+        token.TWITTER_CONSUMER_KEY,
+        token.TWITTER_CONSUMER_SECRET))
+
     global HASHTAG
     HASHTAG = token.HASHTAG
 
@@ -438,7 +440,7 @@ def main():
         else:
             try:
                 tweet(post)
-            except twitter.error.TwitterError as e:
+            except twitter.TwitterError as e:
                 print("[bot] " + str(e))
                 LOG.write("[bot] " + str(e) + "\n")
                 log_tweet(post, "ERROR")
