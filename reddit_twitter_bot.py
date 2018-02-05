@@ -369,7 +369,7 @@ def tweet(post):
         print(post_text)
         status = TWITTER_API.statuses.update(status=post_text)
 
-    log_tweet(post, status.id)
+    log_tweet(post, status["id"])
 
 
 def log_tweet(post, tweet_id):
