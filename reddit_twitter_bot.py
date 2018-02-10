@@ -45,6 +45,7 @@ GFYCAT_CLIENT = GfycatClient()
 
 # Twitter API
 TWITTER_API = None
+UPLOAD = None
 HASHTAG = None
 
 # logging
@@ -345,6 +346,17 @@ def is_spoiler(title):
 
     return False
 
+
+def upload_image(paths):
+    ids = []
+    for path in paths:
+        with open(path, "rb") as imagefile:
+            imagedata = imagefile.read()
+            id_img = UPLOAD.media.upload(media=imagedata)["media_id_string"]
+            ids.append(id_img)
+    return ids
+
+
 def tweet(post):
     img_paths = post["img_paths"]
 
@@ -359,10 +371,8 @@ def tweet(post):
         print("[bot] Posting this link on Twitter")
         print(post_text)
         print("[bot] With images " + str(img_paths))
-        if len(img_paths) == 1:
-            status = TWITTER_API.statuses.update(media=img_paths[0], status=post_text)
-        else:
-            status = TWITTER_API.statuses.update(media=img_paths, status=post_text)
+        media_ids = upload_image(img_paths)
+        status = TWITTER_API.statuses.update(media_ids=",".join(media_ids), status=post_text)
     else:
         post_text = process_title(post)
         print("[bot] Posting this link on Twitter")
@@ -391,15 +401,20 @@ def cleanup_images():
 def main():
     assert(len(sys.argv) == 2)
     global SUBREDDIT
-    SUBREDDIT = sys.argv[1]
-    token = __import__(SUBREDDIT)
+    SUBREDDIT_FILE = sys.argv[1]
+    token = __import__(SUBREDDIT_FILE)
+    SUBREDDIT = token.SUBREDDIT
 
-    global TWITTER_API
-    TWITTER_API = twitter.Twitter(auth=twitter.OAuth(
+    auth = twitter.OAuth(
         token.TWITTER_ACCESS_TOKEN,
         token.TWITTER_ACCESS_TOKEN_SECRET,
         token.TWITTER_CONSUMER_KEY,
-        token.TWITTER_CONSUMER_SECRET))
+        token.TWITTER_CONSUMER_SECRET)
+
+    global TWITTER_API
+    TWITTER_API = twitter.Twitter(auth=auth)
+    global UPLOAD
+    UPLOAD = twitter.Twitter(domain='upload.twitter.com', auth=auth)
 
     global HASHTAG
     HASHTAG = token.HASHTAG
