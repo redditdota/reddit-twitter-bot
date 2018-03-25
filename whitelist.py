@@ -290,6 +290,8 @@ PERSONALITIES_TO_HANDLE = OrderedDict([
     (r'Hotbid', 'Hot_Bid'),
     (r'Kaci', 'KaciAitchison'),
     (r'kbbq', 'KBBQDotA'),
+    (r'KillerPigeon', 'KillerPigeon'),
+    (r'Pigeon', 'KillerPigeon'),
     (r'KotLGuy', 'KotLguy'),
     (r'Lacoste', 'LacosteDota'),
     (r'LD', 'LDeeep'),
