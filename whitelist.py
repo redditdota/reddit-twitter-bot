@@ -281,6 +281,8 @@ PERSONALITIES_TO_HANDLE = OrderedDict([
     (r'esex', 'esportsexpress'),
     (r'esportsexpress', 'esportsexpress'),
     (r'Forsen', 'ForsenSC2'),
+    (r'EG manager', 'Phillip_Aram'),
+    (r'Phil', 'Phillip_Aram'),
     (r'Gareth', 'GarethCasts'),
     (r'Durka', 'GarethCasts'),
     (r'GoDz', 'BTSGoDz'),
