@@ -7,7 +7,6 @@ REVERSE = re.compile(r"\(.*\.\)(.+)\\b")
 PLAYERS_TO_HANDLE = OrderedDict([
 
     # EU
-    (r'Pajkatt', 'PajkattDota'),
     (r'Xcalibur', 'XcaliburYe'),
     ## Ad Finem
     (r'Madara', 'madaradota2'),
@@ -37,8 +36,6 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'Sing', 'Sing2X'),
     (r'SexyBamboe', 'SexyBamboe'),
     (r'Bamboe', 'SexyBamboe'),
-    (r'TheCoon', '33Dota'),
-    (r'33', '33Dota'),
     (r'FLUFFNSTUFF', 'FLUFFDota'),
     (r'FLUFF', 'FLUFFDota'),
     ## OG
@@ -47,9 +44,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'BigDaddyN0tail', 'OG_BDN0tail'),
     (r'BigDaddy', 'OG_BDN0tail'),
     (r'Ana', 'anadota99'),
-    (r's4', 's4dota'),
     (r'JerAx', 'iamJERAX'),
-    (r'Fly', 'Fly_dota2'),
     ## Team Liquid
     (r'MATUMBAMAN', 'LiquidMatumba'),
     (r'Miracle-', 'Liquid_Miracle'),
@@ -130,17 +125,12 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'StanKing', 'StanKingDota'),
     (r'PatSoul', 'PatSoulDota2'),
     (r'Brax', 'braxlikesdota'),
-    (r'CC&C', 'CCnCDotA2'),
-    (r'CCnC', 'CCnCDotA2'),
-    (r'CCC', 'CCnCDotA2'),
+
     (r'Mason', 'masondota'),
     (r'Jeyo', 'Jeyostyle'),
     (r'Ritsu', 'ritsudota'),
     (r'TC', 'TCDota'),
-    (r'Cr1t-', 'Cr1tdota'),
-    (r'Cr1t', 'Cr1tdota'),
     (r'USH', 'ushdota'),
-    (r'zai', 'zai_2002'),
     ## col
     (r'canceL^^', 'canceldota'),
     (r'canceL', 'canceldota'),
@@ -157,9 +147,6 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'monkeysforever', 'MonkeysDota'),
     (r'monkeys-', 'MonkeysDota'),
     ## Digital Chaos
-    (r'Resolut1on', 'Resolut1on_'),
-    (r'w33', 'w33haa'),
-    (r'w33haa', 'w33haa'),
     (r'MoonMeander', 'MoonMeanderated'),
     (r'Moon', 'MoonMeanderated'),
     (r'Saksa', 'Saksadota'),
@@ -168,25 +155,19 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'MiSeRyTheSLAYER', 'MiSeRyDOTA'),
     (r'BuLba', 'BuLbaDotA_'),
     # Evil Geniuses
-    (r'Arteezy', 'arteezy'),
-    (r'rtz', 'arteezy'),
-    (r'artour', 'arteezy'),
-    (r'SumaiL', 'SumaaaaiL'),
+
     (r'UNiVeRsE', 'UniverseDota'),
-    (r'ppd', 'Peterpandam'),
-    (r'peter', 'Peterpandam'),
     (r'Fear', 'FearDotA'),
     (r'FearDarkness', 'FearDotA'),
     ## NP
     (r'EternaLEnVy', 'eternalenvy1991'),
+    (r'EternaL EnVy', 'eternalenvy1991'),
     (r'EE', 'eternalenvy1991'),
     (r'Envy', 'eternalenvy1991'),
     (r'1437', '1437x'),
     (r'Theeban', '1437x'),
     (r'Aui_2000', 'Aui_2000'),
     (r'Aui', 'Aui_2000'),
-    (r'MSS', 'MSSDota'),
-    (r'SVG', 'SVGDota'),
 
     # CIS
     ## Team Empire
@@ -253,6 +234,47 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'Goblak', 'arturfisura666'),
     (r'Goblak', 'arturfisura666'),
     (r'Scandal', 'scandalisback'),
+
+    # South America
+    ## Pain Gaming
+    (r'hFn', 'hFndot4'),
+    (r'Tavo', 'tavodota'),
+    (r'Kingrd', 'Kingrdxd'),
+    (r'Duster', 'Dusterdota'),
+    (r'w33', 'w33haa'),
+    (r'w33haa', 'w33haa'),
+
+    # North America
+    ## Optic
+    (r'Pajkatt', 'PajkattDota'),
+    (r'CC&C', 'CCnCDotA2'),
+    (r'CCnC', 'CCnCDotA2'),
+    (r'CCC', 'CCnCDotA2'),
+    (r'TheCoon', '33Dota'),
+    (r'33', '33Dota'),
+    (r'zai', 'zai_2002'),
+    (r'ppd', 'Peterpandam'),
+    (r'peter', 'Peterpandam'),
+
+    ## EG
+    (r'Arteezy', 'arteezy'),
+    (r'rtz', 'arteezy'),
+    (r'artour', 'arteezy'),
+    (r'SumaiL', 'SumaaaaiL'),
+    (r'Cr1t-', 'Cr1tdota'),
+    (r'Cr1t', 'Cr1tdota'),
+    (r's4', 's4dota'),
+    (r'Fly', 'Fly_dota2'),
+
+
+    ## VGJ.Storm
+    (r'YawaR', 'yawar_ys'),
+    (r'Resolut1on', 'Resolut1on_'),
+    (r'Sneyking', '_sneyking'),
+    (r'MSS', 'MSSDota'),
+    (r'SVG', 'SVGDota'),
+    (r'Clairvoyance', 'clairvoyance102'),
+
 ])
 
 PLAYERS = list(map(lambda name: re.compile(_TEMPLATE % name) if len(name) < 2 else re.compile(_TEMPLATE % name, flags=re.IGNORECASE), PLAYERS_TO_HANDLE.keys()))
