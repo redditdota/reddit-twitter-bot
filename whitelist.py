@@ -71,6 +71,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'Kphoenii', 'kpiidota'),
     (r'Kpii', 'kpiidota'),
     (r'ChuaN', 'NewbeeChuaN'),
+    (r'xNova', 'xNovadota'),
     (r'XtiNcT', 'XtinctDota'),
     #(r'WinteR', 'WinteRDota'),
     (r'QO', 'qodota'),
