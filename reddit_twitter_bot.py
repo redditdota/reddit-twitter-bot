@@ -8,7 +8,7 @@ import urllib.parse
 import itertools
 from glob import glob
 from imgurpython import ImgurClient
-from imgurpython.helpers.error import ImgurClientError
+from imgurpython.helpers.error import ImgurClientError, ImgurClientRateLimitError
 from gfycat.client import GfycatClient
 from gfycat.error import GfycatClientError
 import sys
@@ -22,6 +22,7 @@ from whitelist import *
 # seconds between updates
 WAIT_TIME = 60 * 2
 SAVE_FREQUENCY = 6
+MAX_TRIES = 5
 
 # Place the name of the folder where the images are downloaded
 IMAGE_DIR = "img"
@@ -238,7 +239,18 @@ def process_imgur_link(img):
 
     return img.link
 
-def get_imgur_links(url):
+def get_imgur_links(url, attempts=0):
+    try:
+        return get_imgur_links_helper(url)
+    except ImgurClientRateLimitError:
+        if attempts < MAX_TRIES:
+            time.sleep(30)
+            return get_imgur_links(url, attempts + 1)
+        else:
+            return []
+
+
+def get_imgur_links_helper(url):
     print("[bot] downloading from imgur")
     imgs = []
     img_id = ""
@@ -249,7 +261,7 @@ def get_imgur_links(url):
 
     try:
         album = IMGUR_CLIENT.get_album(img_id)
-        for image in IMGUR_CLIENT.get_album(img_id).images:
+        for image in album.images:
             img_link = process_imgur_link(IMGUR_CLIENT.get_image(image['id']))
             if img_link:
                 imgs.append(img_link)
