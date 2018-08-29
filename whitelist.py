@@ -32,7 +32,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     ## Kaipi
     (r'BOne7', 'bOne7dota'),
     (r'SingSing', 'Sing2X'),
-    (r'Sing Sing', 'Sing2X'),
+    (r'Sing\sSing', 'Sing2X'),
     (r'Sing', 'Sing2X'),
     (r'SexyBamboe', 'SexyBamboe'),
     (r'Bamboe', 'SexyBamboe'),
@@ -40,17 +40,19 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'FLUFF', 'FLUFFDota'),
     ## OG
     (r'n0tail', 'OG_BDN0tail'),
+    (r'notail', 'OG_BDN0tail'),
     (r'BDN', 'OG_BDN0tail'),
     (r'BigDaddyN0tail', 'OG_BDN0tail'),
     (r'BigDaddy', 'OG_BDN0tail'),
     (r'Ana', 'anadota99'),
     (r'JerAx', 'iamJERAX'),
+    (r'Topson', 'TopsonDota'),
     ## Team Liquid
     (r'MATUMBAMAN', 'LiquidMatumba'),
     (r'Miracle-', 'Liquid_Miracle'),
     (r'Miracle', 'Liquid_Miracle'),
     (r'MinD_ContRoL', 'LiquidMinD_ctrL'),
-    (r'MinD ContRoL', 'LiquidMinD_ctrL'),
+    (r'MinD\sContRoL', 'LiquidMinD_ctrL'),
     (r'MinDContRoL', 'LiquidMinD_ctrL'),
     (r'Kuro', 'liquidkuroky'),
     (r'KuroKy', 'liquidkuroky'),
@@ -97,7 +99,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     ## Wings
     (r'Faith_bian', 'Faith_bian'),
     (r'Faithbian', 'Faith_bian'),
-    (r'Faith bian', 'Faith_bian'),
+    (r'Faith\sbian', 'Faith_bian'),
     (r'innocence', 'y1122Innocence'),
     (r'y`', 'y1122Innocence'),
 
@@ -118,7 +120,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     # NA Doto
     (r'BSJ', 'BananaSlamJamma'),
     (r'BananaSlamJamma', 'BananaSlamJamma'),
-    (r'Monkeys Forever', 'MonkeysDota'),
+    (r'Monkeys\sForever', 'MonkeysDota'),
     (r'Monkeys_Forever', 'MonkeysDota'),
     (r'ixmike88', 'ixmike88'),
     (r'ixmike', 'ixmike88'),
@@ -162,9 +164,9 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'FearDarkness', 'FearDotA'),
     ## NP
     (r'EternaLEnVy', 'eternalenvy1991'),
-    (r'EternaL EnVy', 'eternalenvy1991'),
+    (r'EternaL\sEnVy', 'eternalenvy1991'),
     (r'EE', 'eternalenvy1991'),
-    (r'Envy', 'eternalenvy1991'),
+    #(r'Envy', 'eternalenvy1991'),
     (r'1437', '1437x'),
     (r'Theeban', '1437x'),
     (r'Aui_2000', 'Aui_2000'),
@@ -180,7 +182,7 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'KingR', 'R1nater'),
 
     ## Vega
-    #(r'Iceberg', 'Icebergdota'),
+    (r'Iceberg', 'Icebergdota'),
     (r'Mag', 'FollowMag_'),
     (r'Mag~', 'FollowMag_'),
     (r'fng', 'fnggshka'),
@@ -266,7 +268,6 @@ PLAYERS_TO_HANDLE = OrderedDict([
     (r'Cr1t', 'Cr1tdota'),
     (r's4', 's4dota'),
     (r'Fly', 'Fly_dota2'),
-
 
     ## VGJ.Storm
     (r'YawaR', 'yawar_ys'),
@@ -421,7 +422,7 @@ ORGS_TO_HANDLE = OrderedDict([
     (r'FYM', 'FYMHotSauce'),
     (r'FDL', 'fdldota'),
     (r'Friendship, Dedication, Love', 'fdldota'),
-    (r'Iceberg', 'IcebergEsports'),
+    #(r'Iceberg', 'IcebergEsports'),
     (r'Imt', 'Immortals'),
     (r'Immortals', 'Immortals'),
     (r'GES', 'geschampionship'),
