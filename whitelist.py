@@ -243,7 +243,7 @@ ORGS = {
     'compLexity' : [r'col', r'compLexity Gaming', r'compLexity'],
     'datDota' : [r'datDota'],
     'DigitalChaosGG' : [r'Digital Chaos'],
-    'DOTA2' : [r'\bDota(2)?\b'],
+    'DOTA2' : [r'\bDota(\s)?(2)?\b'],
     'DOTABUFF' : [r'Dotabuff'],
     'DotaCinema' : [r'DotaCinema'],
     'DotaPit' : [r'Dota\sPit', r'Dotapit'],
