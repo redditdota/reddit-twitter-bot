@@ -122,30 +122,39 @@ def already_tweeted(pid):
     else:
         return False
 
+def _substitute_handles(title):
+    for b in BLACK_LIST:
+        if b in title:
+            return title
+
+    for (handle, names) in PLAYERS.items():
+        for name in names:
+            if re.search(name, title) is not None:
+                title = name.sub(r"\1@{}\3".format(handle), title, count=1)
+                break
+
+    for (handle, names) in ORGS.items():
+        for name in names:
+            if re.search(name, title) is not None:
+                title = name.sub(r"\1@{}\3".format(handle), title, count=1)
+                break
+
+    for (handle, names) in PERSONALITIES.items():
+        for name in names:
+            if re.search(name, title) is not None:
+                title = name.sub(r"\1@{}\3".format(handle), title, count=1)
+                break
+
+    return title
+
+
 def process_title(post):
     """ Shortens the title of the post to the 140 character limit. """
 
     print("[bot] raw title: " + post["title"])
 
-    title = post["title"]
-    title_lower = title.lower()
-    if ("shop" not in title_lower) and \
-        ("dark moon" not in title_lower) and \
-        ("darkmoon" not in title_lower) and \
-        ("moon shard" not in title_lower) and \
-        ("shadow demon" not in title_lower) and \
-        ("black king bar" not in title_lower) and \
-        ("black hole" not in title_lower):
-        for player in PLAYERS:
-            title = player.sub("@" + PLAYERS_TO_HANDLE[REVERSE.match(player.pattern).group(1)], title, count=1)
+    title = _substitute_handles(post["title"]).strip()
 
-        for org in ORGS:
-            title = org.sub("@" + ORGS_TO_HANDLE[REVERSE.match(org.pattern).group(1)], title, count=1)
-
-        for people in PERSONALITIES:
-            title = people.sub("@" + PERSONALITIES_TO_HANDLE[REVERSE.match(people.pattern).group(1)], title, count=1)
-
-    title = title.strip()
     if (title[0] == "@"):
         title = "." + title
 
