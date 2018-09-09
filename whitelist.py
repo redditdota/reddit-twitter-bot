@@ -301,6 +301,7 @@ ORGS = {
     'theAllianceGG' : [r'[A]lliance', r'Alliance', r'The Alliance'],
     'TheEscapeGaming' : [r'Escape Gaming'],
     'themastersgg' : [r'(The )?Manila Master(s)?'],
+    'tigers_dota' : [r'Tiger(s)?'],
     'TNCPredator' : [r'TNC Gaming', r'TNC Predator', r'TNC'],
     'TrackDota' : [r'TrackDota'],
     'Twitch' : [r'Twitch'],
