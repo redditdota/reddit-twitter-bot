@@ -16,3 +16,5 @@ check_sub("Everything N0tail has said", "Everything @OG_BDN0tail has said")
 check_sub("Dota 2", "@DOTA2")
 check_sub("Dota", "@DOTA2")
 check_sub("Dota2", "@DOTA2")
+
+check_sub("Stan", "@StanCifka")

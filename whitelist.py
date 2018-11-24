@@ -183,6 +183,35 @@ PLAYERS = {
 }
 PLAYERS = { handle : [_compile(name) for name in names] for handle, names in PLAYERS.items()}
 
+ARTIFACT = {
+    'PlayArtifact' : [r'Artifact'],
+    'Liquid_Fr0zen' : [r'fr0zen'],
+    'Liquid_hsdog' : [r'dog'],
+    'coL_superjj102' : [r'SuperJJ'],
+    'Naiman_HS' : [r'Naiman'],
+    'Lifecoach1981' : [r'Lifecoach'],
+    'Wifecoach1981' : [r'Wifecoach'],
+    'StanCifka' : [r'StanCifka', 'Stan', 'luckbox'],
+    'OndrejStrasky' : [r'Honey'],
+    'Hyped_AF' : [r'hyped'],
+    'pascalmaynard' : [r'PMayne'],
+    'Mryagut' : [r'Mryagut'],
+    'drhippi_vp' : [r'DrHippi', r'DrHippiXD'],
+    'Ekop' : [r'Ekop'],
+    'GameKingHS' : [r'GameKing'],
+    'dpmlicious' : [r'dpmlicious'],
+    'Amaz' : [r'Amaz'],
+    'coL_Petrify' : [r'Petrify'],
+    'followMelo' : [r'MELO'],
+    'aj_casts' : [r'Action\sJackson'],
+    'fwoshy' : [r'fwosh', r'fwoshy'],
+    'Savjz' : [r'Savjz'],
+    'swimstrim' : [r'swim', r'swimstrim'],
+    'TidesofTime' : [r'tidesoftime'],
+}
+
+ARTIFACT = { handle : [_compile(name) for name in names] for handle, names in ARTIFACT.items()}
+
 PERSONALITIES = {
     'AnneeDroid' : [r'AnneeDroid'],
     'ayesee' : [r'Ayesee'],
@@ -305,7 +334,6 @@ ORGS = {
     'paingamingbr' : [r'paiN\bGaming', r'paiN'],
     'PENTA_Sports' : [r'PENTA'],
     'pglesports' : [r'PGL'],
-    'PlayArtifact' : [r'Artifact'],
     'PolarityDota2' : [r'Polarity'],
     'prdota2' : [r'Power\bRangers'],
     'PSGeSports' : [r'PSG'],

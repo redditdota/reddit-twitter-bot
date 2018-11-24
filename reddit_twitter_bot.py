@@ -133,6 +133,12 @@ def _substitute_handles(title):
                 title = name.sub(r"\1@{}\3".format(handle), title, count=1)
                 break
 
+    for (handle, names) in ARTIFACT.items():
+        for name in names:
+            if re.search(name, title) is not None:
+                title = name.sub(r"\1@{}\3".format(handle), title, count=1)
+                break
+
     for (handle, names) in ORGS.items():
         for name in names:
             if re.search(name, title) is not None:
