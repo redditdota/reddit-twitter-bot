@@ -152,7 +152,7 @@ PLAYERS = {
     'scandalisback' : [r'Scandal'],
     'SexyBamboe' : [r'SexyBamboe', r'Bamboe'],
     'Silentdota2' : [r'Silent'],
-    'Sing2X' : [r'SingSing', r'Sing\sSing', r'Sing'],
+    'SingSing' : [r'SingSing', r'Sing\sSing', r'Sing'],
     'skylarkXZ' : [r'SkyLark'],
     'sonneiko_o' : [r'SoNNeikO'],
     'ssaspartan' : [r'SsaSpartan'],
