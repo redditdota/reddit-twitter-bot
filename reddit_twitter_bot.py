@@ -344,7 +344,9 @@ def get_images(url):
     if "imgur" in url:
         links = get_imgur_links(url)
     elif "gfycat" in url:
-        links = [get_gfycat_link(url)]
+        gfycat_link = get_gfycat_link(url)
+        if gfycat_link:
+            links = [gfycat_link]
     elif is_direct_link(url):
         links = [url]
     elif "reddituploads" in url:
