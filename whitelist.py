@@ -329,7 +329,7 @@ ORGS = {
     'MVP_GG' : [r'MVP Phoenix'],
     'NatusVincere' : [r'Na Vi', r'Na\'Vi', r'Natus Vincere', r'NaVi'],
     'NewbeeCN' : [r'NB', r'Newbee'],
-    'NiPGaming': [r'NiP', r'Ninjas in Pyjamas']
+    'NiPGaming': [r'NiP', r'Ninjas in Pyjamas'],
     'northernarena' : [r'Northern Arena', r'NorthernArena'],
     'OGDota2' : [r'OG'],
     'OpTicGaming' : [r'Optic\bGaming', r'Optic'],
