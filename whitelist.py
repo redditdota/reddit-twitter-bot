@@ -359,7 +359,7 @@ ORGS = {
     'Twitch' : [r'Twitch'],
     'VegaSquadron' : [r'Vega Squadron', r'Vega'],
     'VeggieEsports' : [r'VEC', r'Vegetables Esports Club', r'Veggies\bEsports', r'Veggies', r'VeggiesEsports'],
-    'vici_gaming' : [r'VG', r'VG.R', r'VG.Reborn', r'Vici Gaming Reborn', r'Vici Gaming', r'Vici'],
+    'VICI' : [r'VG', r'VG.R', r'VG.Reborn', r'Vici Gaming Reborn', r'Vici Gaming', r'Vici'],
     'virtuspro' : [r'Virtus Pro', r'Virtus.Pro', r'VirtusPro', r'VP'],
     'WarriorsGamingU' : [r'WarriorsGaming', r'WarriorsGaming.Unity', r'WarriorsGamingU', r'WG.Unity', r'WGU', r'WGUnity'],
     'wingsgamingcn' : [r'Wings Gaming', r'Wings'],
