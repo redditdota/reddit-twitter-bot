@@ -210,6 +210,7 @@ def download_image(url, path):
             return None
     else:
         print("[bot] Image failed to download %s. Status code: %s" % (url, str(resp.status_code)))
+        return None
 
 
 def has_image(url):
@@ -358,9 +359,12 @@ def get_images(url):
     save_paths = []
     for link in links:
         save_path = IMAGE_DIR + "/" + os.path.basename(urllib.parse.urlsplit(link).path)
-        download_image(link, save_path)
-        save_paths.append(save_path)
-    return save_paths
+        if download_image(link, save_path) is not None:
+            save_paths.append(save_path)
+    if len(save_paths) > 0:
+        return save_paths
+    else:
+        return None
 
 def is_video(link):
     return any(site in link.lower() for site in ("youtube", "twitch", "oddshot"))
