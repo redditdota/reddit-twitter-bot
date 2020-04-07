@@ -5,6 +5,7 @@ import twitter
 import time
 import os
 import urllib.parse
+import urllib.error
 import itertools
 from glob import glob
 from imgurpython import ImgurClient
@@ -388,8 +389,12 @@ def upload_image(paths):
     for path in paths:
         with open(path, "rb") as imagefile:
             imagedata = imagefile.read()
-            id_img = UPLOAD.media.upload(media=imagedata)["media_id_string"]
-            ids.append(id_img)
+            try:
+                id_img = UPLOAD.media.upload(media=imagedata)["media_id_string"]
+                ids.append(id_img)
+            except urllib.error.URLError as e:
+                print("[bot] " + str(e))
+                LOG.write("[bot] " + str(e) + "\n")
     return ids
 
 
