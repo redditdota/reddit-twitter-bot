@@ -167,7 +167,7 @@ def process_title(post):
 
     is_esports = "esports" in post["flair"].lower()
 
-    max_length = 139 - 3
+    max_length = 279 - 3
     if post["url"]:
         suffix = " " + post["link"] + " " + HASHTAG + " " + post["url"]
         max_length -= (4 + len(HASHTAG) + 23 * 2)
@@ -179,11 +179,11 @@ def process_title(post):
         max_length -= (2 + len(HASHTAG) + 23)
 
     shortened = False
-    # shortening to 139
+    # shortening to 279
     while (len(title) > max_length):
         shortened = True
         idx = title.rfind(" ")
-        if (title[idx] == "@"):
+        if idx > 0 and title[idx + 1] == "@":
             title = title[:idx]
         else:
             title = title[:max_length]
