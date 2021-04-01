@@ -32,7 +32,7 @@ MAX_IMAGE_SIZE = 5e6
 MAX_FRAME_RATE = 40
 
 # Place the name of the file to store the IDs of posts that have been posted
-POSTED_CACHE = LRUCache(maxsize = 128)
+POSTED_CACHE = LRUCache(maxsize=128)
 CACHE_FILE = None
 
 # Maximum threshold required for momentum posts
@@ -53,15 +53,18 @@ HASHTAG = None
 # logging
 LOG = open("messages", "a")
 
+
 def setup_connection_reddit(subreddit):
     """ Creates a c/#onnection to the reddit API. """
     print("[bot] Setting up connection with reddit")
     reddit_api = praw.Reddit(
         client_id=REDDIT_CLIENT_ID,
         client_secret=REDDIT_CLIENT_SECRET,
-        user_agent="reddit Twitter tool monitoring {}".format(subreddit))
+        user_agent="reddit Twitter tool monitoring {}".format(subreddit),
+    )
     subreddit = reddit_api.subreddit(subreddit)
     return subreddit
+
 
 def should_post(post):
     if post.over_18:
@@ -80,9 +83,9 @@ def should_post(post):
     if age > 1 * 3600:
         return True
 
-    score = (1.3 * post.score +  post.num_comments) / (age ** 1.4) * elapsed_time
+    score = (1.3 * post.score + post.num_comments) / (age ** 1.4) * elapsed_time
 
-    if (has_image(post.url)):
+    if has_image(post.url):
         score *= 1.5
 
     print("[bot] %f" % score)
@@ -91,10 +94,13 @@ def should_post(post):
     else:
         return False
 
+
 def tweet_creator(subreddit_info):
     print("[bot] Getting posts from reddit")
 
-    posts = itertools.chain(subreddit_info.hot(limit=35), subreddit_info.rising(limit=3))
+    posts = itertools.chain(
+        subreddit_info.hot(limit=35), subreddit_info.rising(limit=3)
+    )
     try:
         posts = list(posts)
     except Exception as e:
@@ -122,6 +128,7 @@ def already_tweeted(pid):
         return True
     else:
         return False
+
 
 def _substitute_handles(title):
     for b in BLACK_LIST:
@@ -162,7 +169,7 @@ def process_title(post):
 
     title = _substitute_handles(post["title"]).strip()
 
-    if (title[0] == "@"):
+    if title[0] == "@":
         title = "." + title
 
     is_esports = "esports" in post["flair"].lower()
@@ -170,17 +177,17 @@ def process_title(post):
     max_length = 279 - 3
     if post["url"]:
         suffix = " " + post["link"] + " " + HASHTAG + " " + post["url"]
-        max_length -= (4 + len(HASHTAG) + 23 * 2)
+        max_length -= 4 + len(HASHTAG) + 23 * 2
     elif post["img_paths"]:
         suffix = " " + post["link"] + " " + HASHTAG
-        max_length -= (3 + len(HASHTAG) + 23)
+        max_length -= 3 + len(HASHTAG) + 23
     else:
         suffix = " " + HASHTAG + " " + post["link"]
-        max_length -= (2 + len(HASHTAG) + 23)
+        max_length -= 2 + len(HASHTAG) + 23
 
     shortened = False
     # shortening to 279
-    while (len(title) > max_length):
+    while len(title) > max_length:
         shortened = True
         idx = title.rfind(" ")
         if idx > 0 and title[idx + 1] == "@":
@@ -188,12 +195,13 @@ def process_title(post):
         else:
             title = title[:max_length]
 
-    if (shortened):
+    if shortened:
         title = title + "..."
 
     title = title + suffix
     print("[bot] new title: " + title)
     return title
+
 
 def download_image(url, path):
     print("[bot] Downloading image at URL " + url + " to " + path)
@@ -210,7 +218,10 @@ def download_image(url, path):
             cleanup_images()
             return None
     else:
-        print("[bot] Image failed to download %s. Status code: %s" % (url, str(resp.status_code)))
+        print(
+            "[bot] Image failed to download %s. Status code: %s"
+            % (url, str(resp.status_code))
+        )
         return None
 
 
@@ -228,21 +239,23 @@ def has_image(url):
         return True
 
     if "gifv" in url:
-        #print("[bot] cannot handle gifv links")
+        # print("[bot] cannot handle gifv links")
         return False
 
     return False
 
+
 def is_direct_link(url):
     return url.endswith(SUPPORTED_IMAGE_TYPES)
+
 
 def process_imgur_link(img):
     if not img.type.endswith(SUPPORTED_IMAGE_TYPES):
         return None
 
     if img.animated:
-        if (img.size > MAX_IMAGE_SIZE):
-            if (img.mp4_size > MAX_IMAGE_SIZE):
+        if img.size > MAX_IMAGE_SIZE:
+            if img.mp4_size > MAX_IMAGE_SIZE:
                 print("[bot] animated image %s too large" % img.link)
                 return None
             else:
@@ -250,11 +263,12 @@ def process_imgur_link(img):
         else:
             return img.link
     else:
-        if (img.size > 5e6):
+        if img.size > 5e6:
             print("[bot] image %s too large" % img.link)
             return None
 
     return img.link
+
 
 def get_imgur_links(url, attempts=0):
     try:
@@ -271,7 +285,7 @@ def get_imgur_links_helper(url):
     print("[bot] downloading from imgur")
     imgs = []
     img_id = ""
-    if "/a/" in url or 'gallery' in url:
+    if "/a/" in url or "gallery" in url:
         img_id = os.path.basename(urllib.parse.urlsplit(url).path)
     else:
         img_id = os.path.basename(urllib.parse.urlsplit(url).path).split(".")[0]
@@ -279,28 +293,32 @@ def get_imgur_links_helper(url):
     try:
         album = IMGUR_CLIENT.get_album(img_id)
         for image in album.images:
-            img_link = process_imgur_link(IMGUR_CLIENT.get_image(image['id']))
+            img_link = process_imgur_link(IMGUR_CLIENT.get_image(image["id"]))
             if img_link:
                 imgs.append(img_link)
                 if img_link.endswith(("gif", "mp4")):
                     break
 
             if len(imgs) >= 4:
-                    break
+                break
     except ImgurClientError as e:
         try:
             img_link = process_imgur_link(IMGUR_CLIENT.get_image(img_id))
             imgs = [img_link] if img_link else []
         except ImgurClientError as e:
-            print("[bot] Image failed to download %s. Status code: %s" % (url, str(e.status_code)))
+            print(
+                "[bot] Image failed to download %s. Status code: %s"
+                % (url, str(e.status_code))
+            )
             print(e.error_message)
             return []
 
     print(imgs)
     return imgs
 
+
 def get_gfycat_link(url):
-    assert("gfycat" in url.lower())
+    assert "gfycat" in url.lower()
     name = url.split("/")[-1]
     gfy = None
     try:
@@ -318,10 +336,12 @@ def get_gfycat_link(url):
         gfy = gfy["gfyItem"]
 
     link = ""
-    if "gifUrl" in gfy and \
-        "gifSize" in gfy and \
-        gfy["gifSize"] is not None and \
-        float(gfy["gifSize"]) <= MAX_IMAGE_SIZE:
+    if (
+        "gifUrl" in gfy
+        and "gifSize" in gfy
+        and gfy["gifSize"] is not None
+        and float(gfy["gifSize"]) <= MAX_IMAGE_SIZE
+    ):
         link = gfy["gifUrl"]
     else:
         if float(gfy["frameRate"]) < MAX_FRAME_RATE and "mp4Url" in gfy:
@@ -336,6 +356,7 @@ def get_gfycat_link(url):
         return link
     else:
         return None
+
 
 def get_images(url):
     """ Downloads i.imgur.com images that reddit posts may point to. """
@@ -367,8 +388,10 @@ def get_images(url):
     else:
         return None
 
+
 def is_video(link):
     return any(site in link.lower() for site in ("youtube", "twitch", "oddshot"))
+
 
 def is_spoiler(title):
     title_lower = title.lower()
@@ -402,7 +425,7 @@ def tweet(post):
     img_paths = post["img_paths"]
 
     # spoiler protection
-    #if "esports" in post["flair"].lower() and is_spoiler(post["title"]):
+    # if "esports" in post["flair"].lower() and is_spoiler(post["title"]):
     if img_paths is None and post["url"] is None and is_spoiler(post["title"]):
         img_paths = ["victory/%d.gif" % randint(0, 10)]
 
@@ -413,7 +436,9 @@ def tweet(post):
         print(post_text)
         print("[bot] With images " + str(img_paths))
         media_ids = upload_image(img_paths)
-        status = TWITTER_API.statuses.update(media_ids=",".join(media_ids), status=post_text)
+        status = TWITTER_API.statuses.update(
+            media_ids=",".join(media_ids), status=post_text
+        )
     else:
         post_text = process_title(post)
         print("[bot] Posting this link on Twitter")
@@ -433,6 +458,7 @@ def log_tweet(post, tweet_id):
     if not post["stickied"]:
         LAST_TWEET = time.time()
 
+
 def cleanup_images():
     # Clean out the image cache
     for filename in glob(IMAGE_DIR + "/*"):
@@ -440,7 +466,7 @@ def cleanup_images():
 
 
 def main():
-    assert(len(sys.argv) == 2)
+    assert len(sys.argv) == 2
     global SUBREDDIT
     SUBREDDIT_FILE = sys.argv[1]
     token = __import__(SUBREDDIT_FILE)
@@ -450,12 +476,13 @@ def main():
         token.TWITTER_ACCESS_TOKEN,
         token.TWITTER_ACCESS_TOKEN_SECRET,
         token.TWITTER_CONSUMER_KEY,
-        token.TWITTER_CONSUMER_SECRET)
+        token.TWITTER_CONSUMER_SECRET,
+    )
 
     global TWITTER_API
     TWITTER_API = twitter.Twitter(auth=auth)
     global UPLOAD
-    UPLOAD = twitter.Twitter(domain='upload.twitter.com', auth=auth)
+    UPLOAD = twitter.Twitter(domain="upload.twitter.com", auth=auth)
 
     global HASHTAG
     HASHTAG = token.HASHTAG
@@ -472,7 +499,7 @@ def main():
         with open(CACHE_FILE, "rb") as cache:
             POSTED_CACHE = pickle.load(cache)
     else:
-        POSTED_CACHE = LRUCache(maxsize = 128)
+        POSTED_CACHE = LRUCache(maxsize=128)
 
     def save_cache():
         with open(CACHE_FILE, "wb") as cache:
@@ -489,7 +516,7 @@ def main():
 
     subreddit = setup_connection_reddit(SUBREDDIT)
     i = 0
-    while(True):
+    while True:
         post = tweet_creator(subreddit)
         if post == None:
             time.sleep(WAIT_TIME)
@@ -509,9 +536,10 @@ def main():
             save_cache()
             i += 1
 
-        if (i == SAVE_FREQUENCY):
+        if i == SAVE_FREQUENCY:
             cleanup_images()
             i = 0
+
 
 if __name__ == "__main__":
     main()
