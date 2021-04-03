@@ -10,4 +10,5 @@ img/
 .DS_Store
 *.pkl
 msgs/*
+messages
 *.sh
