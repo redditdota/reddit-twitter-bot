@@ -492,6 +492,9 @@ def main():
     if not os.path.exists(IMAGE_DIR):
         os.makedirs(IMAGE_DIR)
 
+    if not os.path.exists("cache"):
+        os.makedirs("cache")
+
     global CACHE_FILE
     CACHE_FILE = "cache/%s.pkl" % SUBREDDIT
     global POSTED_CACHE
