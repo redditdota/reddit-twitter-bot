@@ -112,6 +112,7 @@ def tweet_creator(subreddit_info):
         if not already_tweeted(p.id) and should_post(p):
             post["id"] = p.id
             post["title"] = p.title
+            post["author"] = p.author.name
             post["link"] = "https://redd.it/%s" % p.id
             post["img_paths"] = get_images(p.url)
             post["url"] = p.url if is_video(p.url) or "twitter" in p.url else None
@@ -168,29 +169,29 @@ def process_title(post):
     print("[bot] raw title: " + post["title"])
 
     title = _substitute_handles(post["title"]).strip()
-
+    author = f" - /u/{post['author']} "
     if title[0] == "@":
         title = "." + title
 
-    is_esports = "esports" in post["flair"].lower()
-
     max_length = 279 - 3
     if post["url"]:
-        suffix = " " + post["link"] + " " + HASHTAG + " " + post["url"]
+        suffix = author + post["link"] + " " + HASHTAG + " " + post["url"]
         max_length -= 4 + len(HASHTAG) + 23 * 2
     elif post["img_paths"]:
-        suffix = " " + post["link"] + " " + HASHTAG
+        suffix = author + post["link"] + " " + HASHTAG
         max_length -= 3 + len(HASHTAG) + 23
     else:
-        suffix = " " + HASHTAG + " " + post["link"]
+        suffix = author + HASHTAG + " " + post["link"]
         max_length -= 2 + len(HASHTAG) + 23
+
+    max_length -= len(author)
 
     shortened = False
     # shortening to 279
     while len(title) > max_length:
         shortened = True
         idx = title.rfind(" ")
-        if idx > 0 and title[idx + 1] == "@":
+        if idx > 0:
             title = title[:idx]
         else:
             title = title[:max_length]
@@ -393,15 +394,18 @@ def is_video(link):
     return any(site in link.lower() for site in ("youtube", "twitch", "oddshot"))
 
 
-def is_spoiler(title):
-    title_lower = title.lower()
+def is_spoiler(post):
+    if post.spoiler:
+        return True
+
+    title_lower = post["title"].lower()
     if "congrat" in title_lower:
         return True
 
     if "winner" in title_lower and "bracket" not in title_lower:
         return True
 
-    if "post" in title_lower:
+    if "post" in title_lower and "match" in title_lower:
         return True
 
     return False
@@ -426,7 +430,7 @@ def tweet(post):
 
     # spoiler protection
     # if "esports" in post["flair"].lower() and is_spoiler(post["title"]):
-    if img_paths is None and post["url"] is None and is_spoiler(post["title"]):
+    if img_paths is None and post["url"] is None and is_spoiler(post):
         img_paths = ["victory/%d.gif" % randint(0, 10)]
 
     status = None
