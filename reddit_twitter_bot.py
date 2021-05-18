@@ -118,6 +118,7 @@ def tweet_creator(subreddit_info):
             post["url"] = p.url if is_video(p.url) or "twitter" in p.url else None
             post["stickied"] = p.stickied
             post["flair"] = p.link_flair_text or ""
+            post["spoiler"] = p.spoiler
             return post
 
     return None
@@ -395,7 +396,7 @@ def is_video(link):
 
 
 def is_spoiler(post):
-    if post.spoiler:
+    if post["spoiler"]:
         return True
 
     title_lower = post["title"].lower()
