@@ -253,6 +253,7 @@ ARTIFACT = {
 }
 
 PERSONALITIES = {
+    # "MoxxiCasts": [r"Moxxi"],
     "AnneeDroid": [r"AnneeDroid"],
     "ayesee": [r"Ayesee"],
     "BelvedereDota": [r"Belvedere"],
@@ -290,12 +291,10 @@ PERSONALITIES = {
     "Maradota2": [r"Mara"],
     "MautDota": [r"Maut"],
     "MerliniDota": [r"Merlini"],
-    "MoxxiCasts": [r"Moxxi"],
     "MyNameIsMachine": [r"Machine"],
     "NahazDota": [r"Nahaz"],
     "NoobFromUA": [r"NoobFromUA"],
     "ODPixel": [r"ODPixel"],
-    "PaulChaloner": [r"ReDeYe"],
     "Phillip_Aram": [r"EG manager", r"Phil"],
     "PurgeGamers": [r"Purge"],
     "PyrionFlax": [r"Pyrion", r"PyrionFlax"],
@@ -306,7 +305,6 @@ PERSONALITIES = {
     "SUNSfanTV": [r"SUNSfan"],
     "TheMaelk": [r"Maelk"],
     "Thooorin": [r"Thorin"],
-    "TobiWanDOTA": [r"Tobi\sWan", r"Tobi", r"TobiWan", r"TobiWans"],
     "TonyaPredko": [r"Tonya", r"TonyaPredko"],
     "TorteDeLini": [r"TorteDeLini", r"Torte"],
     "TrentPax": [r"Trent", r"TrentPax"],
