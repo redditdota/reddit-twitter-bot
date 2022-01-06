@@ -2,16 +2,21 @@
 
 ## Setup
 
-Install pipenv
+Install poetry
 
 ```sh
-pip install --user pipenv
+pip install --user poetry
 ```
 
 Create python virtual environment
 
 ```sh
-pipenv install --dev
+poetry install
+```
+
+Activate environment
+```sh
+poetry shell
 ```
 
 ## Required Tokens
@@ -35,7 +40,6 @@ GFYCAT_CLIENT_SECRET = ...
 Subreddit specific tokens in dota2.py:
 
 ```text
-
 # Twitter API keys
 TWITTER_ACCESS_TOKEN = ...
 TWITTER_ACCESS_TOKEN_SECRET = ...
