@@ -140,7 +140,7 @@ PLAYERS = {
     "MATUMBAMAN": [r"MATUMBAMAN"],
     "NigmaMC": [r"MinD_ContRoL", r"MinD\sContRoL", r"MinDContRoL"],
     "LodaBerg": [r"Loda"],
-    "MarchDota": [r"March"],
+    #    "MarchDota": [r"March"],
     "madaradota2": [r"Madara"],
     "masondota": [r"Mason"],
     "Meracleeeeee": [r"Meracle"],
