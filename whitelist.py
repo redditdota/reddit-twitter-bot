@@ -427,7 +427,7 @@ ORGS = {
     "NiPGaming": [r"NiP", r"Ninjas in Pyjamas"],
     "NoPingEsports": [r"NoPing\s+e(\-)?sports", r"NoPing"],
     "northernarena": [r"Northern Arena", r"NorthernArena"],
-    "OGDota2": [r"OG"],
+    "OGesports": [r"OG"],
     "OpTicGaming": [r"Optic\s+Gaming", r"Optic"],
     "paingamingbr": [r"paiN\s+Gaming"],
     "PENTA_Sports": [r"PENTA"],
