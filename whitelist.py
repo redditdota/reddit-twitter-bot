@@ -389,7 +389,7 @@ ORGS = {
     "DreamHackDota": [r"DreamHack", r"DreamLeague"],
     "effectgg": [r"Effect Gaming"],
     "EHOMECN": [r"EHOME"],
-    "EntityInd": [r"Entity"],
+    "EntityEurope": [r"Entity"],
     "epicentergg": [r"EPICENTER"],
     "ESLDota2": [r"ESL"],
     "EvilGeniuses": [r"EG", r"Evil Geniuses"],
