@@ -55,7 +55,7 @@ LOG = open("messages", "a")
 
 
 def setup_connection_reddit(subreddit):
-    """ Creates a c/#onnection to the reddit API. """
+    """Creates a c/#onnection to the reddit API."""
     print("[bot] Setting up connection with reddit")
     reddit_api = praw.Reddit(
         client_id=REDDIT_CLIENT_ID,
@@ -83,7 +83,7 @@ def should_post(post):
     if age > 1 * 3600:
         return True
 
-    score = (1.3 * post.score + post.num_comments) / (age ** 1.4) * elapsed_time
+    score = (1.3 * post.score + post.num_comments) / (age**1.4) * elapsed_time
 
     if has_image(post.url):
         score *= 1.5
@@ -125,7 +125,7 @@ def tweet_creator(subreddit_info):
 
 
 def already_tweeted(pid):
-    """ Checks if the reddit Twitter bot has already tweeted a post. """
+    """Checks if the reddit Twitter bot has already tweeted a post."""
     if pid in POSTED_CACHE:
         return True
     else:
@@ -165,7 +165,7 @@ def _substitute_handles(title):
 
 
 def process_title(post):
-    """ Shortens the title of the post to the 140 character limit. """
+    """Shortens the title of the post to the 140 character limit."""
 
     print("[bot] raw title: " + post["title"])
 
@@ -361,7 +361,7 @@ def get_gfycat_link(url):
 
 
 def get_images(url):
-    """ Downloads i.imgur.com images that reddit posts may point to. """
+    """Downloads i.imgur.com images that reddit posts may point to."""
     if not has_image(url):
         return None
 
@@ -454,7 +454,7 @@ def tweet(post):
 
 
 def log_tweet(post, tweet_id):
-    """ Takes note of when the reddit Twitter bot tweeted a post. """
+    """Takes note of when the reddit Twitter bot tweeted a post."""
     if tweet_id == "NOT_POSTED":
         return
 

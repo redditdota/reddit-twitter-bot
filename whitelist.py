@@ -234,7 +234,7 @@ PLAYERS = {
     "tOfuDota2": [r"tOfu"],
     "TopsonDota": [r"Topson"],
     "undershock17": [r"UnderShock"],
-    #"UniverseDota": [r"UNiVeRsE"],
+    # "UniverseDota": [r"UNiVeRsE"],
     "ushdota": [r"USH"],
     "VANSKORdota": [r"VANSKOR"],
     "NigmaW33": [r"w33", r"w33haa"],
