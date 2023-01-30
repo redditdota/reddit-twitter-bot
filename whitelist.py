@@ -421,7 +421,7 @@ ORGS = {
     "NeonEsportsPH": [r"Neon"],
     "NewbeeCN": [r"NB", r"Newbee"],
     "SoniqsEsports": [r"Soniqs"],
-    "TeamNigma": [r"(Team )?Nigma"],
+    "NigmaGalaxy": [r"(Team )?Nigma"],
     "TSM": [r"TSM"],
     "TundraEsports": [r"Tundra"],
     "NiPGaming": [r"NiP", r"Ninjas in Pyjamas"],
