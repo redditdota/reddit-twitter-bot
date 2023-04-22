@@ -35,7 +35,7 @@ PLAYERS = {
     #'WinteRDota' : [r'WinteR']),
     "1437x": [r"1437", r"Theeban"],
     "23savageDota": [r"23savage"],
-    "33Dota": [r"TheCoon", r"33"],
+    "33Dota": [r"TheCoon"],
     "4nalog": [r"4nalog"],
     "9pashka": [r"9pashaebashu", r"9pasha"],
     "abedyusop": [r"Abed"],
