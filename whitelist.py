@@ -261,7 +261,6 @@ PLAYERS = {
 ARTIFACT = {
     "PlayArtifact": [r"Artifact"],
     "Liquid_Fr0zen": [r"fr0zen"],
-    "Liquid_hsdog": [r"dog"],
     "coL_superjj102": [r"SuperJJ"],
     "Naiman_HS": [r"Naiman"],
     "Lifecoach1981": [r"Lifecoach"],
@@ -400,7 +399,7 @@ ORGS = {
     "FTM_dota2": [r"FlyToMoon", r"FTM"],
     "FYMHotSauce": [r"FYM Hot Sauce", r"FYM", r"FYMHotSauce"],
     "TeamGeekFam": [r"GeekFam", r"Geek Fam"],
-    "GaiminGladiator": [r"Gaimin", r"Gaimin Gladiator"],
+    "GaiminGladiator": [r"Gaimin", r"Gaimin Gladiator", r"Gaimin Gladiators"],
     "geschampionship": [r"GES Champ.*", r"GES", r"GESC", r"GESC"],
     "HELLRAISERSgg": [r"\bhr\b", r"hellraiser(s)?"],
     "HGT_Team": [r"HGT", r"HyperGloryTeam"],
