@@ -1,27 +1,37 @@
-import praw
-import json
-import requests
-import twitter
-import time
-import os
-import urllib.parse
-import urllib.error
+import atexit
 import itertools
+import json
+import logging
+import os
+import pickle
+import sys
+import time
+import urllib.error
+import urllib.parse
 from glob import glob
-from imgurpython import ImgurClient
-from imgurpython.helpers.error import ImgurClientError, ImgurClientRateLimitError
+from random import randint
+
+import praw
+import requests
+import tweepy
+from cachetools import LRUCache
 from gfycat.client import GfycatClient
 from gfycat.error import GfycatClientError
-import sys
-from cachetools import LRUCache
-import atexit
-import pickle
-from random import randint
+from imgurpython import ImgurClient
+from imgurpython.helpers.error import (ImgurClientError,
+                                       ImgurClientRateLimitError)
+
 from tokens import *
 from whitelist import *
 
+logging.basicConfig(
+    format="%(asctime)s %(levelname)-8s %(message)s",
+    level=logging.INFO,
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
 # seconds between updates
-WAIT_TIME = 60 * 2
+WAIT_TIME = 60 * 15
 SAVE_FREQUENCY = 6
 MAX_TRIES = 5
 
@@ -47,7 +57,7 @@ GFYCAT_CLIENT = GfycatClient(GFYCAT_CLIENT_ID, GFYCAT_CLIENT_SECRET)
 
 # Twitter API
 TWITTER_API = None
-UPLOAD = None
+TWITTER_CLIENT = None
 HASHTAG = None
 
 # logging
@@ -56,7 +66,7 @@ LOG = open("messages", "a")
 
 def setup_connection_reddit(subreddit):
     """Creates a c/#onnection to the reddit API."""
-    print("[bot] Setting up connection with reddit")
+    logging.info("Setting up connection with reddit")
     reddit_api = praw.Reddit(
         client_id=REDDIT_CLIENT_ID,
         client_secret=REDDIT_CLIENT_SECRET,
@@ -88,7 +98,7 @@ def should_post(post):
     if has_image(post.url):
         score *= 1.5
 
-    print("[bot] %f" % score)
+    logging.info("%f" % score)
     if score > THRESHOLD:
         return True
     else:
@@ -96,7 +106,7 @@ def should_post(post):
 
 
 def tweet_creator(subreddit_info):
-    print("[bot] Getting posts from reddit")
+    logging.info("Getting posts from reddit")
 
     posts = itertools.chain(
         subreddit_info.hot(limit=35), subreddit_info.rising(limit=3)
@@ -104,7 +114,7 @@ def tweet_creator(subreddit_info):
     try:
         posts = list(posts)
     except Exception as e:
-        print(e)
+        logging.info(e)
         return None
 
     post = {}
@@ -167,7 +177,7 @@ def _substitute_handles(title):
 def process_title(post):
     """Shortens the title of the post to the 140 character limit."""
 
-    print("[bot] raw title: " + post["title"])
+    logging.info("raw title: " + post["title"])
 
     title = _substitute_handles(post["title"]).strip()
     author = f" - /u/{post['author']} "
@@ -201,12 +211,12 @@ def process_title(post):
         title = title + "..."
 
     title = title + suffix
-    print("[bot] new title: " + title)
+    logging.info("new title: " + title)
     return title
 
 
 def download_image(url, path):
-    print("[bot] Downloading image at URL " + url + " to " + path)
+    logging.info("Downloading image at URL " + url + " to " + path)
     resp = requests.get(url, stream=True)
     if resp.status_code == 200:
         try:
@@ -215,13 +225,13 @@ def download_image(url, path):
                     image_file.write(chunk)
             return path
         except IOError as e:
-            print("[bot] Image failed to download %s." % url)
-            print(e.error_message)
+            logging.info("Image failed to download %s." % url)
+            logging.info(e.error_message)
             cleanup_images()
             return None
     else:
-        print(
-            "[bot] Image failed to download %s. Status code: %s"
+        logging.info(
+            "Image failed to download %s. Status code: %s"
             % (url, str(resp.status_code))
         )
         return None
@@ -241,7 +251,7 @@ def has_image(url):
         return True
 
     if "gifv" in url:
-        # print("[bot] cannot handle gifv links")
+        # logging.info("cannot handle gifv links")
         return False
 
     return False
@@ -258,7 +268,7 @@ def process_imgur_link(img):
     if img.animated:
         if img.size > MAX_IMAGE_SIZE:
             if img.mp4_size > MAX_IMAGE_SIZE:
-                print("[bot] animated image %s too large" % img.link)
+                logging.info("animated image %s too large" % img.link)
                 return None
             else:
                 return img.mp4
@@ -266,7 +276,7 @@ def process_imgur_link(img):
             return img.link
     else:
         if img.size > 5e6:
-            print("[bot] image %s too large" % img.link)
+            logging.info("image %s too large" % img.link)
             return None
 
     return img.link
@@ -284,7 +294,7 @@ def get_imgur_links(url, attempts=0):
 
 
 def get_imgur_links_helper(url):
-    print("[bot] downloading from imgur")
+    logging.info("downloading from imgur")
     imgs = []
     img_id = ""
     if "/a/" in url or "gallery" in url:
@@ -308,14 +318,14 @@ def get_imgur_links_helper(url):
             img_link = process_imgur_link(IMGUR_CLIENT.get_image(img_id))
             imgs = [img_link] if img_link else []
         except ImgurClientError as e:
-            print(
-                "[bot] Image failed to download %s. Status code: %s"
+            logging.info(
+                "Image failed to download %s. Status code: %s"
                 % (url, str(e.status_code))
             )
-            print(e.error_message)
+            logging.info(e.error_message)
             return []
 
-    print(imgs)
+    logging.info(imgs)
     return imgs
 
 
@@ -326,13 +336,13 @@ def get_gfycat_link(url):
     try:
         gfy = GFYCAT_CLIENT.query_gfy(name)
     except GfycatClientError as e:
-        print("[bot] Gfycat error: could not query %s" % url)
-        print(e.error_message)
-        print(e.status_code)
+        logging.info("Gfycat error: could not query %s" % url)
+        logging.info(e.error_message)
+        logging.info(e.status_code)
         return None
 
     if "error" in gfy or "gfyItem" not in gfy:
-        print("[bot] Gfycat error: could not query %s" % url)
+        logging.info("Gfycat error: could not query %s" % url)
         return None
     else:
         gfy = gfy["gfyItem"]
@@ -415,14 +425,12 @@ def is_spoiler(post):
 def upload_image(paths):
     ids = []
     for path in paths:
-        with open(path, "rb") as imagefile:
-            imagedata = imagefile.read()
-            try:
-                id_img = UPLOAD.media.upload(media=imagedata)["media_id_string"]
-                ids.append(id_img)
-            except urllib.error.URLError as e:
-                print("[bot] " + str(e))
-                LOG.write("[bot] " + str(e) + "\n")
+        try:
+            media = TWITTER_API.media_upload(filename=path)
+            ids.append(media.media_id_string)
+        except urllib.error.URLError as e:
+            logging.info("" + str(e))
+            LOG.write("" + str(e) + "\n")
     return ids
 
 
@@ -437,20 +445,18 @@ def tweet(post):
     status = None
     if img_paths and len(img_paths) > 0:
         post_text = process_title(post)
-        print("[bot] Posting this link on Twitter")
-        print(post_text)
-        print("[bot] With images " + str(img_paths))
+        logging.info("Posting this link on Twitter")
+        logging.info(post_text)
+        logging.info("With images " + str(img_paths))
         media_ids = upload_image(img_paths)
-        status = TWITTER_API.statuses.update(
-            media_ids=",".join(media_ids), status=post_text
-        )
+        status = TWITTER_CLIENT.create_tweet(text=post_text, media_ids=media_ids)
     else:
         post_text = process_title(post)
-        print("[bot] Posting this link on Twitter")
-        print(post_text)
-        status = TWITTER_API.statuses.update(status=post_text)
+        logging.info("Posting this link on Twitter")
+        logging.info(post_text)
+        status = TWITTER_CLIENT.create_tweet(text=post_text)
 
-    log_tweet(post, status["id"])
+    log_tweet(post, status)
 
 
 def log_tweet(post, tweet_id):
@@ -477,20 +483,30 @@ def main():
     token = __import__(SUBREDDIT_FILE)
     SUBREDDIT = token.SUBREDDIT
 
-    auth = twitter.OAuth(
-        token.TWITTER_ACCESS_TOKEN,
-        token.TWITTER_ACCESS_TOKEN_SECRET,
-        token.TWITTER_CONSUMER_KEY,
-        token.TWITTER_CONSUMER_SECRET,
+    auth = tweepy.OAuth1UserHandler(
+        consumer_key=token.TWITTER_CONSUMER_KEY,
+        consumer_secret=token.TWITTER_CONSUMER_SECRET,
+        access_token=token.TWITTER_ACCESS_TOKEN,
+        access_token_secret=token.TWITTER_ACCESS_TOKEN_SECRET,
     )
 
     global TWITTER_API
-    TWITTER_API = twitter.Twitter(auth=auth)
-    global UPLOAD
-    UPLOAD = twitter.Twitter(domain="upload.twitter.com", auth=auth)
+    TWITTER_API = tweepy.API(auth)
+
+    global TWITTER_CLIENT
+    TWITTER_CLIENT = tweepy.Client(
+        bearer_token=token.TWITTER_BEARER_TOKEN,
+        consumer_key=token.TWITTER_CONSUMER_KEY,
+        consumer_secret=token.TWITTER_CONSUMER_SECRET,
+        access_token=token.TWITTER_ACCESS_TOKEN,
+        access_token_secret=token.TWITTER_ACCESS_TOKEN_SECRET,
+    )
+
+    # global UPLOAD
+    # UPLOAD = twitter.Twitter(domain="upload.twitter.com", auth=auth)
 
     global HASHTAG
-    HASHTAG = token.HASHTAG
+    HASHTAG = "#" + token.HASHTAG
 
     """ Runs through the bot posting routine once. """
     # If the tweet tracking file does not already exist, create it
@@ -531,13 +547,9 @@ def main():
         else:
             try:
                 tweet(post)
-            except twitter.TwitterError as e:
-                print("[bot] " + str(e))
-                LOG.write("[bot] " + str(e) + "\n")
-                log_tweet(post, "ERROR")
             except requests.exceptions.ConnectionError as e:
-                print("[bot] " + str(e))
-                LOG.write("[bot] " + str(e) + "\n")
+                logging.info("" + str(e))
+                LOG.write("" + str(e) + "\n")
                 log_tweet(post, "NOT_POSTED")
 
             time.sleep(WAIT_TIME * 2)
