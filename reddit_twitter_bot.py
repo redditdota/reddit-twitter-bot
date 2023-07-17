@@ -551,6 +551,10 @@ def main():
                 logging.info("" + str(e))
                 LOG.write("" + str(e) + "\n")
                 log_tweet(post, "NOT_POSTED")
+            except tweepy.errors.BadRequest as e:
+                logging.info("" + str(e))
+                LOG.write("" + str(e) + "\n")
+                log_tweet(post, "NOT_POSTED")
 
             time.sleep(WAIT_TIME * 2)
             save_cache()
