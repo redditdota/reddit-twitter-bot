@@ -18,8 +18,8 @@ from cachetools import LRUCache
 from gfycat.client import GfycatClient
 from gfycat.error import GfycatClientError
 from imgurpython import ImgurClient
-from imgurpython.helpers.error import (ImgurClientError,
-                                       ImgurClientRateLimitError)
+from imgurpython.helpers.error import ImgurClientError, ImgurClientRateLimitError
+from PIL import Image
 
 from tokens import *
 from whitelist import *
@@ -425,13 +425,26 @@ def is_spoiler(post):
 def upload_image(paths):
     ids = []
     for path in paths:
+        # twitter image size limitations (https://developer.twitter.com/en/docs/twitter-api/v1/media/upload-media/uploading-media/media-best-practices)
+        if os.stat(path).st_size / 1e6 > 512:
+            continue
+
+        with Image.open(path) as im:
+            (w, h) = im.size
+            if w > 1280 or h > 1024:
+                continue
+
         try:
             media = TWITTER_API.media_upload(filename=path)
             ids.append(media.media_id_string)
         except urllib.error.URLError as e:
             logging.info("" + str(e))
             LOG.write("" + str(e) + "\n")
-    return ids
+
+    if len(ids) == 0:
+        return None
+    else:
+        return ids
 
 
 def tweet(post):
