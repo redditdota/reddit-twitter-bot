@@ -15,8 +15,6 @@ import praw
 import requests
 import tweepy
 from cachetools import LRUCache
-from gfycat.client import GfycatClient
-from gfycat.error import GfycatClientError
 from imgurpython import ImgurClient
 from imgurpython.helpers.error import ImgurClientError, ImgurClientRateLimitError
 from PIL import Image
@@ -51,9 +49,6 @@ LAST_TWEET = 0
 
 # Imgur client
 IMGUR_CLIENT = ImgurClient(IMGUR_CLIENT_ID, IMGUR_CLIENT_SECRET)
-
-# GFYCHAT client
-GFYCAT_CLIENT = GfycatClient(GFYCAT_CLIENT_ID, GFYCAT_CLIENT_SECRET)
 
 # Twitter API
 TWITTER_API = None
@@ -244,9 +239,6 @@ def has_image(url):
     if "imgur" in url:
         return True
 
-    if "gfycat" in url:
-        return True
-
     if "reddituploads" in url:
         return True
 
@@ -329,45 +321,6 @@ def get_imgur_links_helper(url):
     return imgs
 
 
-def get_gfycat_link(url):
-    assert "gfycat" in url.lower()
-    name = url.split("/")[-1]
-    gfy = None
-    try:
-        gfy = GFYCAT_CLIENT.query_gfy(name)
-    except GfycatClientError as e:
-        logging.info("Gfycat error: could not query %s" % url)
-        logging.info(e.error_message)
-        logging.info(e.status_code)
-        return None
-
-    if "error" in gfy or "gfyItem" not in gfy:
-        logging.info("Gfycat error: could not query %s" % url)
-        return None
-    else:
-        gfy = gfy["gfyItem"]
-
-    link = ""
-    if (
-        "gifUrl" in gfy
-        and "gifSize" in gfy
-        and gfy["gifSize"] is not None
-        and float(gfy["gifSize"]) <= MAX_IMAGE_SIZE
-    ):
-        link = gfy["gifUrl"]
-    else:
-        if float(gfy["frameRate"]) < MAX_FRAME_RATE and "mp4Url" in gfy:
-            if float(gfy["mp4Size"]) <= MAX_IMAGE_SIZE * 3:
-                link = gfy["mp4Url"]
-            else:
-                link = gfy["mobileUrl"]
-        else:
-            link = gfy.get("max5mbGif", None)
-
-    if link and link.endswith(SUPPORTED_IMAGE_TYPES):
-        return link
-    else:
-        return None
 
 
 def get_images(url):
@@ -378,10 +331,6 @@ def get_images(url):
     links = []
     if "imgur" in url:
         links = get_imgur_links(url)
-    elif "gfycat" in url:
-        gfycat_link = get_gfycat_link(url)
-        if gfycat_link:
-            links = [gfycat_link]
     elif is_direct_link(url):
         links = [url]
     elif "reddituploads" in url:

@@ -173,21 +173,6 @@ files = [
 ]
 
 [[package]]
-name = "gfycat"
-version = "0.2.2"
-description = "A Python client for the Gfycat API"
-category = "main"
-optional = false
-python-versions = "*"
-files = [
-    {file = "gfycat-0.2.2-py3-none-any.whl", hash = "sha256:81fddbde98620ebf664a78592ba50401eb446b3ed1d2aa1d6cc2d6404f247661"},
-    {file = "gfycat-0.2.2.tar.gz", hash = "sha256:d49c01dffd9d9733c32dff25f543b31a4d3e1a1a56748e78c1d0a3e3e9304965"},
-]
-
-[package.dependencies]
-requests = ">=2.7.0"
-
-[[package]]
 name = "idna"
 version = "3.4"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -532,4 +517,4 @@ test = ["websockets"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "960ca50e05a79e9818e3974790ef5387a31d4fd84ad257a18aa97d3838b620a6"
+content-hash = "6702eb5b5836576c503cee4c5c8ec794023a8688fbd2a44ace066156fdfedd57"
