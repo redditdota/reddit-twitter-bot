@@ -298,7 +298,7 @@ PERSONALITIES = {
     "Blitz_DotA": [r"Blitz"],
     "breakycpk": [r"breakycpk", r"breaky"],
     "BTSGoDz": [r"GoDz"],
-    "CharlieYang": [r"Charlie Yang", r"Charlie", r"CharlieYang", r"Monolith"],
+    "CharlieYang": [r"Charlie Yang", r"CharlieYang", r"Monolith"],
     "Cyborgmatt": [r"Cyborgmatt"],
     "day9tv": [r"day9", r"day 9", r"day\[9\]"],
     "diredude": [r"diredude"],
