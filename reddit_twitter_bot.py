@@ -321,8 +321,6 @@ def get_imgur_links_helper(url):
     return imgs
 
 
-
-
 def get_images(url):
     """Downloads i.imgur.com images that reddit posts may point to."""
     if not has_image(url):
@@ -386,9 +384,9 @@ def upload_image(paths):
         try:
             media = TWITTER_API.media_upload(filename=path)
             ids.append(media.media_id_string)
-        except urllib.error.URLError as e:
-            logging.info("" + str(e))
-            LOG.write("" + str(e) + "\n")
+        except (urllib.error.URLError, tweepy.errors.HTTPException) as e:
+            logging.info(str(e))
+            LOG.write(str(e) + "\n")
 
     if len(ids) == 0:
         return None
@@ -510,13 +508,17 @@ def main():
             try:
                 tweet(post)
             except requests.exceptions.ConnectionError as e:
-                logging.info("" + str(e))
-                LOG.write("" + str(e) + "\n")
+                logging.info(str(e))
+                LOG.write(str(e) + "\n")
                 log_tweet(post, "NOT_POSTED")
             except tweepy.errors.BadRequest as e:
-                logging.info("" + str(e))
-                LOG.write("" + str(e) + "\n")
+                logging.info(str(e))
+                LOG.write(str(e) + "\n")
                 log_tweet(post, "NOT_POSTED")
+            except tweepy.errors.Forbidden as e:
+                logging.info(str(e))
+                LOG.write(str(e) + "\n")
+                log_tweet(post, "FORBIDDEN")
 
             time.sleep(WAIT_TIME * 2)
             save_cache()
